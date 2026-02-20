@@ -1,0 +1,14 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/daily-briefing",
+            "schedule": "0 0 * * *",
+            "timezone": "Asia/Seoul"
+        },
+        {
+            "path": "/api/cron/unpaid-reminders",
+            "schedule": "0 2 * * *",
+            "timezone": "Asia/Seoul"
+        }
+    ]
+}
