@@ -89,23 +89,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/login');
     };
 
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-50 text-blue-600">
-                <Loader2 size={48} className="animate-spin mb-4" />
-                <p className="font-bold">인증 상태를 확인 중입니다...</p>
-            </div>
-        );
-    }
-
-    // Double check so private content doesn't flash before redirecting
-    if (!user && pathname !== '/login' && !pathname.startsWith('/auth/') && process.env.NODE_ENV !== 'development') {
-        return null;
-    }
-
     return (
         <AuthContext.Provider value={{ user, isLoading, signOut }}>
-            {children}
+            {isLoading && (
+                <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-neutral-50 text-blue-600">
+                    <Loader2 size={48} className="animate-spin mb-4" />
+                    <p className="font-bold">인증 상태를 확인 중입니다...</p>
+                </div>
+            )}
+            <div style={{ display: isLoading ? 'none' : 'block' }} className="w-full h-full min-h-screen">
+                {children}
+            </div>
         </AuthContext.Provider>
     );
 }
