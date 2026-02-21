@@ -83,6 +83,8 @@ END $$;
 -- (기존에 있던 정책 삭제)
 DROP POLICY IF EXISTS "Users can fully manage their own businesses" ON businesses;
 DROP POLICY IF EXISTS "Users can fully manage rooms in their businesses" ON rooms;
+DROP POLICY IF EXISTS "Users can fully manage their own businesses OR access demo businesses" ON businesses;
+DROP POLICY IF EXISTS "Users can fully manage rooms in their businesses OR access demo rooms" ON rooms;
 
 -- (새 정책 적용)
 CREATE POLICY "Users can fully manage their own businesses OR access demo businesses"
