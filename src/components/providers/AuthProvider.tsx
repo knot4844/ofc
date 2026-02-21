@@ -73,7 +73,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 3. Route Guard
     useEffect(() => {
         if (!isLoading) {
-            if (!user && pathname !== '/login' && !pathname.startsWith('/auth/') && pathname !== '/') {
+            const publicRoutes = ['/', '/login', '/master-admin', '/terms', '/privacy'];
+            const isPublicPath = publicRoutes.includes(pathname) || pathname?.startsWith('/pricing') || pathname?.startsWith('/auth/');
+
+            if (!user && !isPublicPath) {
                 // Not logged in and trying to access private route -> redirect to login
                 router.push('/login');
             } else if (user && pathname === '/login') {

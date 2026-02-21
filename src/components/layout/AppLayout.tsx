@@ -9,7 +9,7 @@ import AIAutoAgent from "../dashboard/AIAutoAgent";
 export function AppLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     // Only apply dashboard layout wrappers when NOT on standard public routes
-    const isPublicRoute = pathname === '/' || pathname === '/login' || pathname?.startsWith('/pricing');
+    const isPublicRoute = ['/', '/login', '/master-admin', '/terms', '/privacy'].includes(pathname) || pathname?.startsWith('/pricing');
 
     if (isPublicRoute) {
         return <>{children}</>;
