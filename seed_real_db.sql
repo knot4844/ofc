@@ -12,6 +12,9 @@ ON CONFLICT (id) DO UPDATE SET
     address = EXCLUDED.address,
     owner_id = NULL;
 
+-- 1.5. 기존에 있던 불필요한 사업장 찌꺼기 삭제 (정확히 3개만 남기기 위해)
+DELETE FROM businesses WHERE id NOT IN ('b_daewoo', 'b_royal', 'b_teheran');
+
 -- 2. 기존 호실(Rooms) 데이터 초기화 및 데모 데이터 삽입
 DELETE FROM rooms WHERE business_id IN ('b_daewoo', 'b_royal', 'b_teheran');
 

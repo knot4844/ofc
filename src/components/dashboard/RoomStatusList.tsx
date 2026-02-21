@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Bell } from "lucide-react";
+import Link from "next/link";
 import { useBusiness } from "@/components/providers/BusinessProvider";
 import { Room } from "@/lib/data";
 
@@ -45,8 +46,9 @@ export function RoomStatusList() {
                     const isVacant = room.status === "VACANT";
 
                     return (
-                        <div
+                        <Link
                             key={room.id}
+                            href={`/rooms/${room.id}`}
                             className={`relative p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-md ${isPaid ? "bg-emerald-50/30 border-emerald-200 hover:border-emerald-400" :
                                 isUnpaid ? "bg-rose-50 border-rose-200 hover:border-rose-400" :
                                     "bg-white border-neutral-200 hover:border-neutral-400"
@@ -54,7 +56,10 @@ export function RoomStatusList() {
                         >
                             {!isVacant && (
                                 <button
-                                    onClick={(e) => toggleAutoNotify(e, room.id)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        toggleAutoNotify(e, room.id);
+                                    }}
                                     className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors ${room.autoNotify ? "text-blue-600 bg-blue-100" : "text-neutral-300 hover:bg-neutral-100"
                                         }`}
                                     title="자동 알림톡 발송"
@@ -79,7 +84,7 @@ export function RoomStatusList() {
                             ) : (
                                 <span className="text-xs text-neutral-400 font-medium py-1">공실</span>
                             )}
-                        </div>
+                        </Link>
                     );
                 })}
 
