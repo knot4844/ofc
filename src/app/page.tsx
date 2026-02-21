@@ -146,13 +146,12 @@ export default function LandingPage() {
 
             {/* Footer */}
             <footer className="bg-neutral-900 text-neutral-400 py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-2 text-white">
-                        <Building2 size={24} />
-                        <span className="font-bold text-xl tracking-tight">대우오피스 파트너스</span>
-                    </div>
-                    <div className="text-sm">
-                        &copy; {new Date().getFullYear()} Daewoo Office Partners. All rights reserved.
+                <div className="border-t border-neutral-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-500">
+                    <p>© 2026 대우오피스 파트너스. All rights reserved.</p>
+                    <div className="flex gap-6 mt-4 md:mt-0">
+                        <Link href="/terms" className="hover:text-neutral-900 transition-colors">이용약관</Link>
+                        <Link href="/privacy" className="hover:text-neutral-900 transition-colors">개인정보 처리방침</Link>
+                        <a href="mailto:support@daewoo-partners.com" className="hover:text-neutral-900 transition-colors">고객지원</a>
                     </div>
                 </div>
             </footer>
