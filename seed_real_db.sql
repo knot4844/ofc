@@ -3,9 +3,9 @@ ALTER TABLE businesses ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES auth.us
 
 -- 1. 데모용 사업장 데이터 초기화 (owner_id를 NULL로 지정하여 데모 환경용 공용 데이터로 만듭니다)
 INSERT INTO businesses (id, name, owner_name, address) VALUES
-('b_daewoo', '대우오피스', '대표님', '서울시 강남구 역삼동'),
+('b_daewoo', '대우 고시원', '대표님', '서울시 강남구 역삼동'),
 ('b_royal', '로얄 오피스텔', '대표님', '서울시 서초구 서초동'),
-('b_teheran', '테헤란로 상가', '대표님', '서울시 강남구 테헤란로')
+('b_teheran', '테헤란로상가', '대표님', '서울시 강남구 테헤란로')
 ON CONFLICT (id) DO UPDATE SET 
     name = EXCLUDED.name, 
     owner_name = EXCLUDED.owner_name, 
@@ -39,8 +39,8 @@ BEGIN
             monthly_rent := (30 + floor(random() * 31)::int) * 10000;
             deposit := monthly_rent * 10;
             
-            -- 상태 결정 (15% 공실, 25% 미납)
-            IF random() < 0.15 THEN
+            -- 상태 결정 (2% 공실, 25% 미납)
+            IF random() < 0.02 THEN
                 status := 'VACANT';
             ELSIF random() < 0.25 THEN
                 status := 'UNPAID';

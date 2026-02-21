@@ -38,9 +38,9 @@ export interface Business {
 
 // 1. 사업장 데이터
 export const businesses: Business[] = [
-    { id: "b_daewoo", name: "대우오피스", ownerName: "대표님", address: "서울시 강남구 역삼동" },
+    { id: "b_daewoo", name: "대우 고시원", ownerName: "대표님", address: "서울시 강남구 역삼동" },
     { id: "b_royal", name: "로얄 오피스텔", ownerName: "대표님", address: "서울시 서초구 서초동" },
-    { id: "b_teheran", name: "테헤란로 상가", ownerName: "대표님", address: "서울시 강남구 테헤란로" },
+    { id: "b_teheran", name: "테헤란로상가", ownerName: "대표님", address: "서울시 강남구 테헤란로" },
 ];
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
