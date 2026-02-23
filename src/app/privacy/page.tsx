@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export const metadata = {
-    title: '개인정보 처리방침 | 대우오피스 파트너스',
-    description: '대우오피스 파트너스 개인정보 처리방침',
+    title: '개인정보 처리방침 | Nap do',
+    description: 'Nap do 개인정보 처리방침',
 };
 
 export default function PrivacyPolicyPage() {
@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
                     <section>
                         <h2 className="text-lg font-bold text-neutral-900 mb-3 border-b pb-2">제1조 (개인정보의 처리 목적)</h2>
                         <p>
-                            대우오피스 파트너스(이하 "회사")는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 경우에는 「개인정보 보호법」 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
+                            Nap do(이하 "회사")는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 경우에는 「개인정보 보호법」 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
                         </p>
                         <ol className="list-decimal pl-5 mt-2 space-y-1">
                             <li>홈페이지 회원가입 및 관리: 회원 가입의사 확인, 회원제 서비스 제공에 따른 본인 식별/인증, 서비스 부정이용 방지, 각종 고지/통지 등</li>
@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
                         </p>
                         <ul className="pl-5 mt-2 space-y-1">
                             <li><strong>성명/직책:</strong> 고객지원팀장 (예시)</li>
-                            <li><strong>연락처:</strong> support@daewoo-partners.com</li>
+                            <li><strong>연락처:</strong> support@napdo.co.kr</li>
                         </ul>
                         <p className="mt-2 text-xs text-neutral-500">※ 실제 상용화 시, 대표님의 실제 성함과 연락 가능한 고객센터 이메일로 변경되어야 합니다.</p>
                     </section>

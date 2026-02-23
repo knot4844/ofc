@@ -35,7 +35,7 @@ export async function GET(req: Request) {
             };
 
             const prompt = `
-                당신은 부동산 임대업 SaaS '대우오피스 파트너스'의 AI 비서입니다.
+                당신은 부동산 임대업 SaaS 'Nap do'의 AI 비서입니다.
                 다음과 같은 건물 현황 통계가 주어집니다:
                 ${JSON.stringify(stats, null, 2)}
                 최고경영자(${business.ownerName})에게 아침 인사와 함께 핵심 이슈 3~4문장 내외로만 요약해 카카오톡 알림톡으로 보낼 짧은 브리핑 메시지를 작성하세요.

@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3b82f6;
+  --color-primary: #002366;
   --color-secondary: #64748b;
   --color-background: #ffffff;
   --color-foreground: #171717;
+  --color-blue-50: #eff4ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-500: #4169e1; /* Royal blue */
+  --color-blue-600: #1a42a0; /* Deeper */
+  --color-blue-700: #002366; /* British royal blue */
 }
 
 body {

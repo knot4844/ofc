@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-당신은 '대우오피스' 임대 관리 시스템의 자동화 AI입니다.
+당신은 'Nabido' 임대 관리 시스템의 자동화 AI입니다.
 임차인에게 발송할 미납 및 계약 만료 안내 메시지를 작성해야 합니다.
 사용자(대표)의 지시: 정기적으로 연락하는 임차인들이므로, 길고 구구절절한 인사말이나 감성적인 멘트는 전부 빼세요. 가장 사무적이고, 건조하고, 정확하게 요점만 전달하는 아주 짧은 미니멀한 텍스트를 작성하세요. 
 
@@ -34,7 +34,7 @@ ${JSON.stringify(issues, null, 2)}
 [
     {
         "roomId": "방ID",
-        "message": "[대우오피스] OOO 대표님, n월 임대료 000,000원이 미납되었습니다. 확인 부탁드립니다."
+        "message": "[Nabido] OOO 대표님, n월 임대료 000,000원이 미납되었습니다. 확인 부탁드립니다."
     },
     ...
 ]

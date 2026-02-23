@@ -43,7 +43,7 @@ export function Header() {
                                 {user?.email?.split('@')[0] || "관리자"}
                             </p>
                             <p className="text-xs text-neutral-500 mt-1 leading-none truncate max-w-[150px]">
-                                {currentBusiness?.name || "대우오피스 파트너스"}
+                                {currentBusiness?.name || "Nabido"}
                             </p>
                         </div>
                     </button>

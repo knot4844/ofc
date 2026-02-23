@@ -14,6 +14,7 @@ import {
     AlertCircle
 } from "lucide-react";
 import Link from "next/link";
+import * as XLSX from "xlsx";
 
 export default function RoomDetailPage() {
     const params = useParams();
@@ -63,6 +64,30 @@ export default function RoomDetailPage() {
         };
     });
 
+    const handleExportExcel = () => {
+        const exportData = mockPaymentHistory.map((row) => ({
+            "청구 월": row.month,
+            "납부 금액(원)": row.amount,
+            "약정일": row.dueDate,
+            "수납 상태": row.status === "PAID" ? "납부 완료" : row.status === "UNPAID" ? "미납" : "수납 대기",
+            "수납 완료일": row.paidDate || "-",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        // 컬럼 너비 설정
+        ws["!cols"] = [
+            { wch: 15 }, // 청구 월
+            { wch: 15 }, // 납부 금액
+            { wch: 15 }, // 약정일
+            { wch: 12 }, // 수납 상태
+            { wch: 15 }, // 수납 완료일
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "상세 납입 내역");
+        XLSX.writeFile(wb, `${room.name}_납입내역_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+
     return (
         <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
             {/* Header */}
@@ -92,6 +117,9 @@ export default function RoomDetailPage() {
 
                 {!isVacant && (
                     <div className="flex gap-2">
+                        <Link href={`/contracts/${room.id}`} target="_blank" className="px-4 py-2 bg-emerald-50 text-emerald-700 shadow-sm rounded-lg text-sm font-bold hover:bg-emerald-100 transition-colors flex items-center gap-1.5">
+                            <FileText size={16} /> 전자계약서 보기
+                        </Link>
                         <Link href="/payments" className="px-4 py-2 bg-white border border-neutral-200 shadow-sm rounded-lg text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition-colors">
                             수납 등록
                         </Link>
@@ -147,7 +175,11 @@ export default function RoomDetailPage() {
                     <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
                         <div className="p-5 border-b border-neutral-100 bg-neutral-50/50 flex items-center justify-between">
                             <h3 className="font-bold text-neutral-900 text-lg">상세 임대료 징수 이력</h3>
-                            <button className="text-sm font-medium text-blue-600 hover:underline">
+                            <button
+                                onClick={handleExportExcel}
+                                className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
                                 전체 이력 엑셀 다운로드
                             </button>
                         </div>

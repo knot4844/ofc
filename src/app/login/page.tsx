@@ -61,7 +61,7 @@ export default function LoginPage() {
                         <span className="text-white font-black text-2xl tracking-tighter">DW</span>
                     </div>
                     <h2 className="text-center text-3xl font-extrabold text-neutral-900 tracking-tight">
-                        대우오피스 파트너스
+                        Nabido
                     </h2>
                     <p className="mt-2 text-center text-sm text-neutral-600">
                         임대업 1인 기업을 위한 완벽한 무인화 솔루션

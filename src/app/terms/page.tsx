@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export const metadata = {
-    title: '이용약관 | 대우오피스 파트너스',
-    description: '대우오피스 파트너스 서비스 이용약관',
+    title: '이용약관 | Nabido',
+    description: 'Nabido 서비스 이용약관',
 };
 
 export default function TermsOfServicePage() {
@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
                     <section>
                         <h2 className="text-lg font-bold text-neutral-900 mb-3 border-b pb-2">제1조 (목적)</h2>
                         <p>
-                            본 약관은 대우오피스 파트너스(이하 "회사")가 제공하는 임대 자동화 및 건물 관리 시스템 서비스(이하 "서비스")의 이용조건 및 절차, 회사와 회원 간의 권리, 의무, 책임사항 및 기타 필요한 사항을 규정함을 목적으로 합니다.
+                            본 약관은 Nabido(이하 "회사")가 제공하는 임대 자동화 및 건물 관리 시스템 서비스(이하 "서비스")의 이용조건 및 절차, 회사와 회원 간의 권리, 의무, 책임사항 및 기타 필요한 사항을 규정함을 목적으로 합니다.
                         </p>
                     </section>
 

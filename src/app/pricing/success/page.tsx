@@ -42,7 +42,7 @@ function SuccessContent() {
                     <h2 className="text-2xl font-bold text-neutral-900 mb-2">결제가 완료되었습니다!</h2>
                     <p className="text-neutral-500 mb-8">
                         이제 Pro 요금제의 모든 기능을 사용할 수 있습니다.<br />
-                        대우오피스 파트너스와 함께 비즈니스를 무인화하세요.
+                        냅둬와 함께 비즈니스를 무인화하세요.
                     </p>
 
                     <div className="bg-neutral-50 rounded-xl p-4 text-left space-y-2 mb-8 border border-neutral-100">

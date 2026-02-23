@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         const { stats } = await req.json();
 
         const prompt = `
-            당신은 부동산 임대업 SaaS '대우오피스 파트너스'의 AI 비서입니다.
+            당신은 부동산 임대업 SaaS 'Nabido'의 AI 비서입니다.
             최고경영자(건물주/임대인)에게 전달할 오늘의 '일일 브리핑(Daily Briefing)'을 작성해주세요.
 
             다음과 같은 건물 현황 통계가 주어집니다:

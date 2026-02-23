@@ -22,7 +22,7 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 mb-1">상호 (법인명)</label>
-                                <input type="text" className="w-full px-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="대우오피스 파트너스" defaultValue="대우오피스" />
+                                <input type="text" className="w-full px-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nap do" defaultValue="Nap do" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 mb-1">대표자명</label>

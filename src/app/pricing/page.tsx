@@ -49,10 +49,10 @@ export default function PricingPage() {
 
                         <div className="space-y-4">
                             {[
-                                "사업장 1개 관리",
-                                "호실 최대 10개까지 등록",
-                                "기본 대시보드 통계",
-                                "수동 수납 관리"
+                                "사업장 1개 한정 관리",
+                                "호실 최대 3개까지 등록 가능",
+                                "기본 대시보드와 통계 확인",
+                                "수동 수납 관리 지원"
                             ].map((feature, i) => (
                                 <div key={i} className="flex items-start gap-3 text-sm text-neutral-700 font-medium">
                                     <CheckCircle2 size={18} className="text-neutral-400 shrink-0 mt-0.5" />
@@ -71,29 +71,29 @@ export default function PricingPage() {
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex flex-col items-center justify-center text-white mb-6 shadow-md">
                             <Zap size={24} className="fill-white/20" />
                         </div>
-                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">프로 (Pro)</h3>
-                        <p className="text-neutral-500 text-sm mb-6 h-10">완벽한 무인화(Zero-Touch)가 필요한 스마트 임대사업자</p>
+                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">비기너 (Beginner)</h3>
+                        <p className="text-neutral-500 text-sm mb-6 h-10">생업과 임대업을 병행하는 알짜 임대사업자</p>
 
                         <div className="mb-8 flex items-baseline gap-1">
-                            <span className="text-4xl font-black text-neutral-900">₩29,000</span>
+                            <span className="text-4xl font-black text-neutral-900">₩9,900</span>
                             <span className="text-neutral-500 font-medium">/ 월</span>
                         </div>
 
                         <button
-                            onClick={() => setSelectedPlan({ amount: 29000, name: '대우오피스 Pro 요금제 (월정액)' })}
+                            onClick={() => setSelectedPlan({ amount: 9900, name: 'Nabido Beginner 요금제 (월정액)' })}
                             className="w-full py-4 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all flex justify-center items-center gap-2 mb-8 group"
                         >
-                            Pro 요금제로 업그레이드
+                            Beginner 요금제로 업그레이드
                             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
 
                         <div className="space-y-4">
                             {[
-                                "사업장 및 호실 무제한 등록",
-                                "AI 통장 입금 내역 실시간 매칭",
-                                "팝빌 연동 세금계산서 자동 발행",
-                                "수납 내역 및 미납자 엑셀 다운로드",
-                                "1:1 채팅 고객지원"
+                                "사업장 1개 한정 관리",
+                                "호실 최대 5개까지 유연한 등록",
+                                "AI 통장 입금 내역 실시간 자동 매칭",
+                                "입금 확인 즉시 전자세금계산서 자동 발행 (건당 300원 실비)",
+                                "카톡/문자 자동 알림 템플릿 제공"
                             ].map((feature, i) => (
                                 <div key={i} className="flex items-start gap-3 text-sm text-neutral-900 font-bold">
                                     <CheckCircle2 size={20} className="text-blue-600 shrink-0" />
@@ -108,23 +108,27 @@ export default function PricingPage() {
                         <div className="w-12 h-12 rounded-xl bg-neutral-900 flex flex-col items-center justify-center text-white mb-6 shadow-md">
                             <Star size={24} />
                         </div>
-                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">엔터프라이즈 (Enterprise)</h3>
-                        <p className="text-neutral-500 text-sm mb-6 h-10">대형 오피스 빌딩 및 다수 법인을 운영하는 기업</p>
+                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">프로 (Pro)</h3>
+                        <p className="text-neutral-500 text-sm mb-6 h-10">중대형 건물 및 다수 임대주택을 운영하는 전문 임대사업자</p>
 
-                        <div className="mb-8">
-                            <span className="text-4xl font-black text-neutral-900">도입 문의</span>
+                        <div className="mb-8 flex items-baseline gap-1">
+                            <span className="text-4xl font-black text-neutral-900">₩19,900</span>
+                            <span className="text-neutral-500 font-medium">/ 월</span>
                         </div>
 
-                        <button className="w-full py-4 px-4 bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl transition-colors mb-8">
-                            영업팀과 상담하기
+                        <button
+                            onClick={() => setSelectedPlan({ amount: 19900, name: 'Nabido Pro 요금제 (월정액)' })}
+                            className="w-full py-4 px-4 bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl transition-colors mb-8"
+                        >
+                            Pro 구독하기
                         </button>
 
                         <div className="space-y-4">
                             {[
-                                "프로(Pro) 요금제 모든 기능",
-                                "기존 ERP 데이터 마이그레이션",
-                                "맞춤형 시스템 연동 API 제공",
-                                "전담 온보딩 매니저 배정"
+                                "사업장 최대 3개까지 완벽 관리",
+                                "호실 최대 50개까지 넉넉한 등록",
+                                "스마트 간편결제(카드/페이) 월세 수납",
+                                "입금 확인 즉시 전자세금계산서 자동 발행 (건당 300원 실비)"
                             ].map((feature, i) => (
                                 <div key={i} className="flex items-start gap-3 text-sm text-neutral-700 font-medium">
                                     <CheckCircle2 size={18} className="text-neutral-900 shrink-0 mt-0.5" />

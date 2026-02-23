@@ -92,7 +92,7 @@ export default function MasterAdminPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <ShieldCheck className="text-blue-400" size={24} />
-                        <h1 className="font-bold text-lg tracking-tight">대우오피스 백오피스 (SaaS Admin)</h1>
+                        <h1 className="font-bold text-lg tracking-tight">Nap do 백오피스 (SaaS Admin)</h1>
                     </div>
                     <button
                         onClick={() => setIsAuthenticated(false)}

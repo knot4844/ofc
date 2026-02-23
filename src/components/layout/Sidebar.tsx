@@ -9,6 +9,13 @@ export function Sidebar() {
 
     return (
         <aside className="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-white border-r border-neutral-200 px-4 py-6 flex-col z-50">
+            {/* Global Logo */}
+            <Link href="/" className="flex items-center gap-2 mb-8 px-2 group">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md group-hover:bg-blue-700 transition-colors">
+                    <Building2 size={20} className="text-white" />
+                </div>
+                <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">Nabido</span>
+            </Link>
             <div className="relative group mb-10 w-full">
                 <button className="w-full flex items-center justify-between p-2 hover:bg-neutral-50 rounded-xl transition-colors text-left border border-transparent hover:border-neutral-200">
                     <div className="flex items-center gap-3 overflow-hidden">
