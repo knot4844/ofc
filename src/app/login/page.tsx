@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Send, Building2, CheckCircle2, Mail, ArrowRight } from "lucide-react"; // Added Send, Building2, CheckCircle2, kept Mail, ArrowRight
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toggleDemoLogin } from "@/components/providers/AuthProvider"; // New import
 
 export default function LoginPage() {
@@ -57,12 +58,14 @@ export default function LoginPage() {
         <div className="absolute inset-0 z-50 bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center flex-col items-center">
-                    <div className="h-14 w-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg flex items-center justify-center mb-4 transform -rotate-6">
-                        <span className="text-white font-black text-2xl tracking-tighter">DW</span>
-                    </div>
-                    <h2 className="text-center text-3xl font-extrabold text-neutral-900 tracking-tight">
-                        Nabido
-                    </h2>
+                    <Link href="/" className="flex flex-col items-center group">
+                        <div className="h-14 w-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg flex items-center justify-center mb-4 transform -rotate-6 group-hover:rotate-0 transition-transform">
+                            <span className="text-white font-black text-2xl tracking-tighter">DW</span>
+                        </div>
+                        <h2 className="text-center text-3xl font-extrabold text-neutral-900 tracking-tight group-hover:text-blue-600 transition-colors">
+                            Nabido
+                        </h2>
+                    </Link>
                     <p className="mt-2 text-center text-sm text-neutral-600">
                         임대업 1인 기업을 위한 완벽한 무인화 솔루션
                     </p>

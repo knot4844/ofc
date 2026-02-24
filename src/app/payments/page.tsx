@@ -9,12 +9,18 @@ export default function PaymentsPage() {
     const rooms = getRoomsByBusiness(selectedBusinessId).filter(r => r.status !== "VACANT");
 
     // Mock incoming bank transactions
-    const [transactions, setTransactions] = useState([
+    const [allTransactions] = useState([
         { id: "tx_1", date: "2023-10-25", amount: 550000, depositor: "김밥천국", status: "UNMATCHED" },
         { id: "tx_2", date: "2023-10-25", amount: 850000, depositor: "홍길동", status: "UNMATCHED" }, // Name mismatch
         { id: "tx_3", date: "2023-10-24", amount: 2000000, depositor: "장수약국", status: "UNMATCHED" },
         { id: "tx_4", date: "2023-10-24", amount: 850000, depositor: "임차인_238호", status: "UNMATCHED" },
+        { id: "tx_5", date: "2023-10-26", amount: 350000, depositor: "임차인_201호", status: "UNMATCHED" }, // Daewoo Gositel
+        { id: "tx_6", date: "2023-10-26", amount: 650000, depositor: "임차인_202호", status: "UNMATCHED" }, // Daewoo Gositel
+        { id: "tx_7", date: "2023-10-27", amount: 1500000, depositor: "임차인_101호", status: "UNMATCHED" }, // Royal/Teheran
     ]);
+
+    // Track matching state locally to simulate DB updates
+    const [matchedIds, setMatchedIds] = useState<string[]>([]);
 
     const [isSyncing, setIsSyncing] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
@@ -27,22 +33,37 @@ export default function PaymentsPage() {
         setTimeout(() => setIsSyncing(false), 1500);
     };
 
+    // Derived state: compute transactions with matching applied, then filter by business
+    const processedTransactions = allTransactions.map(t => ({
+        ...t,
+        status: matchedIds.includes(t.id) ? "MATCHED" : t.status
+    }));
+
+    const visibleTransactions = selectedBusinessId === "ALL"
+        ? processedTransactions
+        : processedTransactions.filter(tx => {
+            // Include if they vaguely match the tenant names from this business, or some random ones
+            return rooms.some(r => r.tenant?.name === tx.depositor || tx.depositor.includes("김밥천국"));
+        });
+
     const handleAutoMatch = async () => {
         setIsMatching(true);
 
         // 1. Simulate AI Matching First
         await new Promise(resolve => setTimeout(resolve, 2000));
 
+        let newMatchedIds: string[] = [];
         let matchedTransactions: any[] = [];
 
-        setTransactions(prev => prev.map(t => {
-            if (t.depositor === "김밥천국" || t.depositor === "장수약국" || t.depositor === "임차인_238호") {
-                const matched = { ...t, status: "MATCHED" };
-                matchedTransactions.push(matched);
-                return matched;
+        // Determine which ones to match from visible
+        visibleTransactions.forEach(t => {
+            if (t.depositor === "김밥천국" || t.depositor === "장수약국" || t.depositor.includes("임차인_")) {
+                newMatchedIds.push(t.id);
+                matchedTransactions.push({ ...t, status: "MATCHED" });
             }
-            return t;
-        }));
+        });
+
+        setMatchedIds(prev => [...prev, ...newMatchedIds]);
 
         setIsMatching(false);
 
@@ -139,7 +160,7 @@ export default function PaymentsPage() {
                     </button>
                     <button
                         onClick={handleAutoMatch}
-                        disabled={isMatching || transactions.every(t => t.status === "MATCHED")}
+                        disabled={isMatching || visibleTransactions.every(t => t.status === "MATCHED") || visibleTransactions.length === 0}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm disabled:bg-neutral-300 disabled:cursor-not-allowed"
                     >
                         {isMatching ? "매칭 분석 중..." : "AI 수납 자동 매칭"}
@@ -160,7 +181,11 @@ export default function PaymentsPage() {
                     </div>
 
                     <div className="divide-y divide-neutral-100 overflow-y-auto flex-1 p-2">
-                        {transactions.map(tx => (
+                        {visibleTransactions.length === 0 ? (
+                            <div className="text-center py-12 text-neutral-500">
+                                해당 사업장에 매칭 대기 중인 입금 내역이 없습니다.
+                            </div>
+                        ) : visibleTransactions.map(tx => (
                             <div key={tx.id} className={`p-4 rounded-lg my-1 transition-all flex items-center justify-between ${tx.status === "MATCHED"
                                 ? "bg-emerald-50 border border-emerald-100"
                                 : "bg-white hover:bg-neutral-50 border border-transparent"
@@ -205,7 +230,7 @@ export default function PaymentsPage() {
                     <div className="divide-y divide-neutral-100 overflow-y-auto flex-1 p-2">
                         {rooms.map(room => {
                             // Find if there's a successful match for visual feedback
-                            const isRecentlyMatched = transactions.find(t => t.status === "MATCHED" && t.depositor === room.tenant?.name);
+                            const isRecentlyMatched = processedTransactions.find(t => t.status === "MATCHED" && t.depositor === room.tenant?.name);
 
                             return (
                                 <div key={room.id} className={`p-4 rounded-lg my-1 transition-all flex items-center justify-between ${isRecentlyMatched
