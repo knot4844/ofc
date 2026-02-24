@@ -118,9 +118,10 @@ export default function PricingPage() {
 
                         <button
                             onClick={() => setSelectedPlan({ amount: 19900, name: 'Nabido Pro 요금제 (월정액)' })}
-                            className="w-full py-4 px-4 bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl transition-colors mb-8"
+                            className="w-full py-4 px-4 bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-900 font-bold rounded-xl transition-all flex justify-center items-center gap-2 mb-8 group"
                         >
-                            Pro 구독하기
+                            Pro 요금제로 업그레이드
+                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
 
                         <div className="space-y-4">
