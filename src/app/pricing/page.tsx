@@ -3,12 +3,23 @@
 import React, { useState } from "react";
 import { CheckCircle2, Star, Zap, Building2, ArrowRight } from "lucide-react";
 import { TossCheckout } from "@/components/payments/TossCheckout";
+import Link from "next/link";
 
 export default function PricingPage() {
     const [selectedPlan, setSelectedPlan] = useState<{ amount: number, name: string } | null>(null);
 
     return (
         <div className="min-h-screen bg-neutral-50 pb-24 relative overflow-hidden">
+
+            {/* Home Navigation */}
+            <div className="absolute top-6 left-6 md:top-8 md:left-8 z-50">
+                <Link href="/" className="flex items-center gap-2 group">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center transform group-hover:-translate-y-0.5 transition-transform shadow-md">
+                        <Building2 size={20} className="text-white" />
+                    </div>
+                    <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">Nabido</span>
+                </Link>
+            </div>
 
             {/* Background Decorations */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-100/50 to-transparent blur-3xl -z-10 rounded-full"></div>
