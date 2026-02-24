@@ -105,7 +105,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/ai_daily_briefing_demo_1771560126369.webp" alt="AI 일일 브리핑" className="w-full object-cover" />
+                                        <img src="/images/feature_kakao.png" alt="AI 일일 브리핑" className="w-full aspect-square object-cover" />
                                     </div>
                                 </div>
                             </div>
@@ -130,7 +130,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl -skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/payments_after_matching_1771544245501.png" alt="AI 통장 매칭" className="w-full object-cover" />
+                                        <img src="/images/feature_match.png" alt="AI 통장 매칭" className="w-full aspect-square object-cover" />
                                     </div>
                                 </div>
                             </div>
@@ -155,7 +155,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/full_page_success_check_1771558420799.png" alt="세금계산서 발행" className="w-full object-cover" />
+                                        <img src="/images/feature_tax.png" alt="세금계산서 발행" className="w-full aspect-square object-cover" />
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl -skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/ai_generated_messages_1771557281851.png" alt="미납자 자동 관리" className="w-full object-cover" />
+                                        <img src="/images/feature_unpaid.png" alt="미납자 자동 관리" className="w-full aspect-square object-cover" />
                                     </div>
                                 </div>
                             </div>
@@ -204,8 +204,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500 border-8 border-neutral-900/5 bg-neutral-900 p-2 max-w-sm mx-auto">
-                                        <img src="/images/tenant_portal_top_1771741829583.png" alt="임차인 카드 납부" className="w-full object-contain rounded-2xl" />
+                                    <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500 border-8 border-neutral-900/5 bg-neutral-900 p-2 mx-auto">
+                                        <img src="/images/feature_portal.png" alt="임차인 카드 납부" className="w-full aspect-square object-cover rounded-2xl" />
                                     </div>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/electronic_signature_success_1771743017745.png" alt="스마트 전자계약" className="w-full object-cover" />
+                                        <img src="/images/feature_contract.png" alt="스마트 전자계약" className="w-full aspect-square object-cover" />
                                     </div>
                                 </div>
                             </div>
