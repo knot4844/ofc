@@ -18,9 +18,20 @@ export default function LandingPage() {
                         </div>
                         <span className="font-bold text-xl tracking-tight text-neutral-900">Nabido</span>
                     </Link>
-                    <nav className="hidden md:flex gap-8">
-                        <Link href="#features" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">기능 소개</Link>
-                        <Link href="/pricing" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">요금 안내</Link>
+                    <nav className="hidden md:flex gap-8 items-center">
+                        <div className="relative group">
+                            <Link href="#features" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors py-6">기능 소개</Link>
+                            {/* Dropdown Menu */}
+                            <div className="absolute left-1/2 -translate-x-1/2 top-full w-56 bg-white rounded-xl shadow-2xl border border-neutral-100 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
+                                <Link href="#feature-kakao" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">카카오톡 일일 브리핑</Link>
+                                <Link href="#feature-match" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">AI 수납 자동 확인</Link>
+                                <Link href="#feature-tax" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">세금계산서 원클릭 자동 발행</Link>
+                                <Link href="#feature-unpaid" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">미납자 알림 자동 관리</Link>
+                                <Link href="#feature-portal" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">스마트 임차인 포털 & 카드결제</Link>
+                                <Link href="#feature-contract" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">100% 무료 스마트 전자계약</Link>
+                            </div>
+                        </div>
+                        <Link href="/pricing" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors py-2">요금 안내</Link>
                     </nav>
                     <div className="flex items-center gap-4">
                         {user ? (
@@ -75,7 +86,7 @@ export default function LandingPage() {
 
                         <div className="space-y-32">
                             {/* Feature 1: KakaoTalk Messages */}
-                            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                            <div id="feature-kakao" className="flex flex-col md:flex-row items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center text-yellow-600 mb-6">
                                         <MessageSquare size={32} />
@@ -100,7 +111,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 2: Auto Match */}
-                            <div className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20">
+                            <div id="feature-match" className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                                         <Zap size={32} />
@@ -125,7 +136,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 3: Tax Invoice */}
-                            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                            <div id="feature-tax" className="flex flex-col md:flex-row items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6">
                                         <FileText size={32} />
@@ -150,7 +161,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 4: Delinquent Tenant Management */}
-                            <div className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20">
+                            <div id="feature-unpaid" className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 mb-6">
                                         <AlertCircle size={32} />
@@ -175,7 +186,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 5: Tenant Portal */}
-                            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+                            <div id="feature-portal" className="flex flex-col md:flex-row items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
                                         <CreditCard size={32} />
@@ -200,7 +211,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 6: E-Signature */}
-                            <div className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20">
+                            <div id="feature-contract" className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 scroll-mt-32">
                                 <div className="flex-1 space-y-6">
                                     <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 mb-6">
                                         <Shield size={32} />
