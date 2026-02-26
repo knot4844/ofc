@@ -128,7 +128,7 @@ export default function SettingsPage() {
                                     value={slackWebhook}
                                     onChange={(e) => setSlackWebhook(e.target.value)}
                                     className="w-full px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 font-mono transition-colors"
-                                    placeholder="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+                                    placeholder="Slack 수신 Webhook URL을 여기에 붙여넣으세요"
                                 />
                             </div>
                         </div>
