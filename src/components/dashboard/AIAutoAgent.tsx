@@ -99,8 +99,25 @@ export default function AIAutoAgent() {
         }
     };
 
-    const handleSend = (roomId: string) => {
-        alert("알림톡 전송이 완료되었습니다! (시뮬레이션)");
+    const handleSend = async (roomId: string, message: string, tenantName: string) => {
+        alert("알림톡 전송이 완료되었습니다! (시뮬레이션)\n등록된 Slack 연동이 있다면 알림이 전송됩니다.");
+
+        // Slack Webhook 연동
+        const slackWebhook = localStorage.getItem("nabido_slack_webhook");
+        if (slackWebhook) {
+            try {
+                await fetch(slackWebhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: `*🚨 [Nabido 알림톡 발송 완료]*\n*대상:* ${tenantName} 고객님\n\n> ${message.replace(/\n/g, '\n> ')}`
+                    })
+                });
+            } catch (err) {
+                console.error("Slack 연동 전송 실패:", err);
+            }
+        }
+
         setMessages(prev => prev.filter(m => m.roomId !== roomId));
         setIssues(prev => prev.filter(i => i.roomId !== roomId));
     };
@@ -219,7 +236,7 @@ export default function AIAutoAgent() {
                                                             />
                                                             <div className="flex justify-end mt-2">
                                                                 <button
-                                                                    onClick={() => handleSend(issue.roomId)}
+                                                                    onClick={() => handleSend(issue.roomId, generatedMsg.message, issue.tenantName)}
                                                                     className="bg-neutral-800 hover:bg-black text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition-colors"
                                                                 >
                                                                     <Send size={12} /> 알림톡 발송

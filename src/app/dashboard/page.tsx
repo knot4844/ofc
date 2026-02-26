@@ -6,6 +6,8 @@ import { RoomStatusList } from "@/components/dashboard/RoomStatusList";
 import { UnpaidSummary } from "@/components/dashboard/UnpaidSummary";
 import { ContractExpiryWidget } from "@/components/dashboard/ContractExpiryWidget";
 import { AIBriefingWidget } from "@/components/dashboard/AIBriefingWidget";
+import { AIChatWidget } from "@/components/dashboard/AIChatWidget";
+import { MarketAnalysisWidget } from "@/components/dashboard/MarketAnalysisWidget";
 import { Building2, Wallet, CalendarDays } from "lucide-react";
 import { useBusiness } from "@/components/providers/BusinessProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -84,10 +86,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI Daily Briefing */}
-      <section>
-        <AIBriefingWidget />
-      </section>
+      {/* AI Intelligence Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section className="lg:col-span-1">
+          <AIBriefingWidget />
+        </section>
+        <section className="lg:col-span-1">
+          <AIChatWidget />
+        </section>
+        <section className="lg:col-span-1">
+          <MarketAnalysisWidget />
+        </section>
+      </div>
 
       <section>
         <ContractExpiryWidget />

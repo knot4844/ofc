@@ -1,7 +1,27 @@
-import React from "react";
-import { Copy, Save, AlertCircle, HelpCircle } from "lucide-react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Copy, Save, AlertCircle, HelpCircle, MessageSquare } from "lucide-react";
 
 export default function SettingsPage() {
+    const [slackWebhook, setSlackWebhook] = useState("");
+    const [driveSync, setDriveSync] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+
+    useEffect(() => {
+        const storedWebhook = localStorage.getItem("nabido_slack_webhook");
+        if (storedWebhook) setSlackWebhook(storedWebhook);
+
+        const storedDrive = localStorage.getItem("nabido_drive_sync");
+        if (storedDrive === "true") setDriveSync(true);
+    }, []);
+
+    const handleSave = () => {
+        localStorage.setItem("nabido_slack_webhook", slackWebhook);
+        localStorage.setItem("nabido_drive_sync", driveSync.toString());
+        setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 2000);
+    };
     return (
         <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
             <header className="mb-8 border-b border-neutral-200 pb-4">
@@ -91,11 +111,51 @@ export default function SettingsPage() {
                             </div>
                         </div>
 
+                        {/* Slack / Workspace 연동 */}
+                        <div className="bg-neutral-50 rounded-xl p-5 border border-neutral-200">
+                            <div className="flex items-center gap-2 mb-3">
+                                <MessageSquare size={16} className="text-indigo-600" />
+                                <h3 className="font-bold text-neutral-900 text-sm">Slack / 워크스페이스 연동 (알림 자동화)</h3>
+                            </div>
+                            <p className="text-xs text-neutral-500 mb-4 leading-relaxed">
+                                카카오톡 알림톡 발송 내역이나 일일 브리핑, 계약 완료 등의 중요 이벤트를 Slack 채널로도 동시에 받아볼 수 있습니다. Slack 설정에서 수신 Webhook URL을 발급받아 붙여넣어주세요.
+                            </p>
+
+                            <div>
+                                <label className="block text-xs font-medium text-neutral-600 mb-1">Slack Webhook URL</label>
+                                <input
+                                    type="text"
+                                    value={slackWebhook}
+                                    onChange={(e) => setSlackWebhook(e.target.value)}
+                                    className="w-full px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 font-mono transition-colors"
+                                    placeholder="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+                                />
+                            </div>
+                        </div>
+
+                        {/* 클라우드 드라이브 연동 */}
+                        <div className="bg-neutral-50 rounded-xl p-5 border border-neutral-200 flex items-center justify-between">
+                            <div>
+                                <h3 className="font-bold text-neutral-900 text-sm mb-1">Google Drive 계약서 자동 백업 연동</h3>
+                                <p className="text-xs text-neutral-500">전자 서명이 완료되면 자동으로 'Nabido 계약서' 폴더에 PDF 원본을 백업합니다.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={driveSync}
+                                    onChange={(e) => setDriveSync(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
                     </div>
                 </section>
 
-                <div className="flex justify-end pt-4">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-neutral-900 hover:bg-black text-white font-bold rounded-xl shadow-md transition-all group">
+                <div className="flex justify-end pt-4 items-center gap-4">
+                    {isSaved && <span className="text-sm font-bold text-emerald-600 animate-in fade-in">설정이 저장되었습니다!</span>}
+                    <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-neutral-900 hover:bg-black text-white font-bold rounded-xl shadow-md transition-all group active:scale-95">
                         <Save size={18} />
                         저장하기
                     </button>

@@ -60,8 +60,8 @@ EXECUTE FUNCTION handle_updated_at();
 
 
 -- Insert Initial Mock Data
-INSERT INTO businesses (id, name, owner_name, registration_number, address, contact) VALUES
-('b_daewoo', '대우오피스', '김대우', '123-45-67890', '서울시 강남구 테헤란로 123', '02-1234-5678'),
-('b_harim', '하림산업', '이하림', '987-65-43210', '경기도 성남시 분당구 판교역로 456', '031-987-6543'),
-('b_bullo', '불로장생', '박장생', '111-22-33333', '서울시 종로구 세종대로 789', '02-111-2222')
+INSERT INTO businesses (id, name, owner_name, address) VALUES
+('b_daewoo', '대우 고시원', '대표님', '서울시 강남구 역삼동'),
+('b_royal', '로얄 오피스텔', '대표님', '서울시 서초구 서초동'),
+('b_teheran', '테헤란로상가', '대표님', '서울시 강남구 테헤란로')
 ON CONFLICT (id) DO NOTHING;

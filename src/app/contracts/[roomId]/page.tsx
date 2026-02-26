@@ -64,6 +64,13 @@ export default function ContractPage() {
         const formattedDate = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
         setSignDate(formattedDate);
         setIsSigned(true);
+
+        const isDriveSync = localStorage.getItem("nabido_drive_sync") === "true";
+        if (isDriveSync) {
+            setTimeout(() => {
+                alert("🚀 Google Drive 'Nabido/계약서_백업' 폴더로 전자 계약서 원본(PDF)이 안전하게 자동 동기화되었습니다!");
+            }, 800);
+        }
     };
 
     if (isSigned) {

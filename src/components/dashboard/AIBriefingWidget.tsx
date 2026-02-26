@@ -88,8 +88,36 @@ export function AIBriefingWidget() {
                 )}
             </div>
 
-            <div className="flex justify-end relative z-10">
-                <button className="flex items-center gap-2 text-sm font-bold bg-white text-indigo-900 px-4 py-2 rounded-lg hover:bg-neutral-100 transition-colors">
+            <div className="flex flex-col sm:flex-row justify-end relative z-10 gap-2">
+                <button
+                    onClick={async () => {
+                        const webhook = localStorage.getItem("nabido_slack_webhook");
+                        if (!webhook) {
+                            alert("환경설정에서 Slack Webhook URL을 먼저 등록해주세요.");
+                            return;
+                        }
+                        if (!report) return;
+
+                        try {
+                            await fetch(webhook, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    text: `*📊 [Nabido 오늘의 통계 브리핑]*\n\n${report}`
+                                })
+                            });
+                            alert("Slack으로 브리핑 전송이 완료되었습니다.");
+                        } catch (err) {
+                            console.error(err);
+                            alert("전송에 실패했습니다.");
+                        }
+                    }}
+                    disabled={isLoading || !report}
+                    className="flex items-center justify-center gap-2 text-sm font-bold bg-[#4A154B] hover:bg-[#361036] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                >
+                    Slack으로 전송
+                </button>
+                <button className="flex items-center justify-center gap-2 text-sm font-bold bg-white text-indigo-900 px-4 py-2 rounded-lg hover:bg-neutral-100 transition-colors">
                     전체 통계 보기 <ArrowRight size={16} />
                 </button>
             </div>

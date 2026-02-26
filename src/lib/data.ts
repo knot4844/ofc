@@ -59,6 +59,11 @@ const generateRooms = (businessId: string, count: number, startRoomNum: number):
 
         const roomName = `${startRoomNum + i}호`;
 
+        // unpaidMonths를 먼저 계산하고 unpaidAmount는 monthlyRent * unpaidMonths로 통일
+        // (각각 별도 random()을 쓰면 "2개월 미납인데 금액은 3달치" 같은 불일치 발생)
+        const unpaidMonths = status === "UNPAID" ? Math.floor(Math.random() * 3) + 1 : 0;
+        const unpaidAmount = unpaidMonths * monthlyRent;
+
         rooms.push({
             id: `r_${businessId}_${i}`,
             name: roomName,
@@ -78,8 +83,8 @@ const generateRooms = (businessId: string, count: number, startRoomNum: number):
                 isVATIncluded: false // 기본적으로 부가세 별도 (공급가액 기준)
             },
             autoNotify: status !== "VACANT" && Math.random() > 0.5,
-            unpaidAmount: status === "UNPAID" ? monthlyRent * (Math.floor(Math.random() * 3) + 1) : 0,
-            unpaidMonths: status === "UNPAID" ? Math.floor(Math.random() * 3) + 1 : 0,
+            unpaidMonths,
+            unpaidAmount,
             leaseStart: status === "VACANT" ? undefined : "2024-01-01",
             leaseEnd: status === "VACANT" ? undefined : (Math.random() > 0.8 ? "2024-11-30" : "2025-12-31")
         });

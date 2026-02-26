@@ -9,9 +9,16 @@ export function ContractExpiryWidget() {
     const { selectedBusinessId, getRoomsByBusiness } = useBusiness();
     const rooms = getRoomsByBusiness(selectedBusinessId).filter(r => r.status !== "VACANT" && r.leaseEnd);
 
-    // Filter rooms expiring within 60 days (mock logic, comparing string dates roughly for demo)
-    // Assume today is '2024-10-01' for this demo so '2024-11-15' shows up as expiring soon
-    const expiringRooms = rooms.filter(r => r.leaseEnd && r.leaseEnd.startsWith("2024"));
+    // 오늘 날짜 기준 60일 이내 만료되는 계약을 필터링 (dashboard/page.tsx와 동일한 로직)
+    const today = new Date();
+    const sixtyDaysFromNow = new Date();
+    sixtyDaysFromNow.setDate(today.getDate() + 60);
+
+    const expiringRooms = rooms.filter(r => {
+        if (!r.leaseEnd) return false;
+        const endDate = new Date(r.leaseEnd);
+        return endDate >= today && endDate <= sixtyDaysFromNow;
+    });
 
     if (expiringRooms.length === 0) return null;
 

@@ -10,13 +10,13 @@ export default function PaymentsPage() {
 
     // Mock incoming bank transactions
     const [allTransactions] = useState([
-        { id: "tx_1", date: "2023-10-25", amount: 550000, depositor: "김밥천국", status: "UNMATCHED" },
-        { id: "tx_2", date: "2023-10-25", amount: 850000, depositor: "홍길동", status: "UNMATCHED" }, // Name mismatch
-        { id: "tx_3", date: "2023-10-24", amount: 2000000, depositor: "장수약국", status: "UNMATCHED" },
-        { id: "tx_4", date: "2023-10-24", amount: 850000, depositor: "임차인_238호", status: "UNMATCHED" },
-        { id: "tx_5", date: "2023-10-26", amount: 350000, depositor: "임차인_201호", status: "UNMATCHED" }, // Daewoo Gositel
-        { id: "tx_6", date: "2023-10-26", amount: 650000, depositor: "임차인_202호", status: "UNMATCHED" }, // Daewoo Gositel
-        { id: "tx_7", date: "2023-10-27", amount: 1500000, depositor: "임차인_101호", status: "UNMATCHED" }, // Royal/Teheran
+        { id: "tx_1", date: "2026-02-25", amount: 550000, depositor: "김밥천국", status: "UNMATCHED" },
+        { id: "tx_2", date: "2026-02-25", amount: 850000, depositor: "홍길동", status: "UNMATCHED" }, // 이름 불일치 (수동 처리 필요)
+        { id: "tx_3", date: "2026-02-24", amount: 2000000, depositor: "장수약국", status: "UNMATCHED" },
+        { id: "tx_4", date: "2026-02-24", amount: 850000, depositor: "임차인_238호", status: "UNMATCHED" },
+        { id: "tx_5", date: "2026-02-26", amount: 350000, depositor: "임차인_201호", status: "UNMATCHED" }, // 대우 고시원
+        { id: "tx_6", date: "2026-02-26", amount: 650000, depositor: "임차인_202호", status: "UNMATCHED" }, // 대우 고시원
+        { id: "tx_7", date: "2026-02-27", amount: 1500000, depositor: "임차인_101호", status: "UNMATCHED" }, // 로얄/테헤란
     ]);
 
     // Track matching state locally to simulate DB updates
