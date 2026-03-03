@@ -53,7 +53,7 @@ export default function LandingPage() {
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">이제 AI가 대신합니다.</span>
                         </h1>
                         <p className="text-xl text-neutral-500 mb-10 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                            통장 입금 내역 확인, 세금계산서 발행, 미수금 독촉까지. 매일 반복되던 업무를 'Nap do'가 완벽하게 자동화합니다.
+                            통장 입금 내역 확인, 세금계산서 발행, 미수금 독촉까지. 매일 반복되던 업무를 'noado'가 완벽하게 자동화합니다.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
                             <Link href={user ? "/dashboard" : "/login"} className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group">
@@ -64,7 +64,7 @@ export default function LandingPage() {
 
                         <div className="mt-16 sm:mt-24 mx-auto max-w-5xl rounded-2xl overflow-hidden shadow-2xl border border-neutral-200/60 relative animate-in zoom-in-95 fade-in duration-1000 delay-500 bg-black">
                             {/* Dashboard Mockup Image */}
-                            <Image src="/images/napdo_royal_blue_hero_1771798110526.png" alt="noado 대시보드" width={1200} height={750} className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" priority />
+                            <Image src="/images/noado_royal_blue_hero_1771798110526.png" alt="noado 대시보드" width={1200} height={750} className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" priority />
                         </div>
                     </div>
                 </section>
@@ -255,7 +255,7 @@ export default function LandingPage() {
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <Link href="/terms" className="hover:text-neutral-900 transition-colors">이용약관</Link>
                         <Link href="/privacy" className="hover:text-neutral-900 transition-colors">개인정보 처리방침</Link>
-                        <a href="mailto:support@napdo.co.kr" className="hover:text-neutral-900 transition-colors">고객지원</a>
+                        <a href="mailto:support@noado.co.kr" className="hover:text-neutral-900 transition-colors">고객지원</a>
                     </div>
                 </div>
             </footer>
