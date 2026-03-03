@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const { data, error } = await supabaseAdmin.from('businesses').insert({
+        id: crypto.randomUUID(),
         owner_id: user.id,
         name: body.name,
         address: body.address || '',

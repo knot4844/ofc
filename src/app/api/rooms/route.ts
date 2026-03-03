@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     if (!biz) return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
 
     const { data, error } = await supabaseAdmin.from('rooms').insert({
+        id: crypto.randomUUID(),
         business_id: body.businessId,
         name: body.name,
         status: body.status || 'VACANT',
