@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import { useBusiness } from "@/components/providers/BusinessProvider";
 import { Room } from "@/lib/data";
-import { Search, Info, MessageSquare, AlertCircle, Upload, Download, Loader2 } from "lucide-react";
+import { Search, Info, MessageSquare, AlertCircle, Upload, Download, Loader2, Link as LinkIcon, CheckCircle2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -16,7 +16,35 @@ export default function TenantsPage() {
     const [showOnlyUnpaid, setShowOnlyUnpaid] = useState(false);
     const [selectedRooms, setSelectedRooms] = useState<Set<string>>(new Set());
     const [isUploading, setIsUploading] = useState(false);
+    const [notification, setNotification] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [generatingLink, setGeneratingLink] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const showNotification = (type: 'success' | 'error', text: string) => {
+        setNotification({ type, text });
+        setTimeout(() => setNotification(null), 3000);
+    };
+
+    const handleGenerateInviteLink = async (roomId: string) => {
+        setGeneratingLink(roomId);
+        try {
+            const res = await fetch('/api/invite/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomId })
+            });
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || '초대 링크 생성 실패');
+
+            await navigator.clipboard.writeText(data.inviteUrl);
+            showNotification('success', '초대 링크가 클립보드에 복사되었습니다. 임차인에게 전달해주세요.');
+        } catch (error: any) {
+            showNotification('error', error.message || '초대 링크를 생성할 수 없습니다.');
+        } finally {
+            setGeneratingLink(null);
+        }
+    };
 
     // Filter logic
     const filteredRooms = rooms.filter(room => {
@@ -44,8 +72,7 @@ export default function TenantsPage() {
 
     const handleBulkNotification = () => {
         if (selectedRooms.size === 0) return;
-        alert(`${selectedRooms.size}명의 임차인에게 카카오톡/문자 알림을 발송합니다.`);
-        // Reset selection after sending
+        showNotification('success', `${selectedRooms.size}명의 임차인에게 카카오톡/문자 알림을 발송했습니다.`);
         setSelectedRooms(new Set());
     };
 
@@ -134,10 +161,10 @@ export default function TenantsPage() {
                 }
 
                 setRooms(updatedRooms);
-                alert("엑셀 데이터가 성공적으로 분석 및 반영되었습니다.");
+                showNotification('success', '엑셀 데이터가 성공적으로 반영되었습니다.');
             } catch (error) {
-                console.error("Excel Error:", error);
-                alert("엑셀 업로드 중 오류가 발생했습니다.");
+                console.error('Excel Error:', error);
+                showNotification('error', '엑셀 업로드 중 오류가 발생했습니다.');
             } finally {
                 setIsUploading(false);
                 if (fileInputRef.current) fileInputRef.current.value = "";
@@ -148,6 +175,15 @@ export default function TenantsPage() {
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
+            {/* 토스트 알림 */}
+            {notification && (
+                <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-bold animate-in slide-in-from-top-2 duration-300 ${notification.type === 'success'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-rose-600 text-white'
+                    }`}>
+                    {notification.text}
+                </div>
+            )}
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
                 <div>
                     <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">호실 및 임차인 관리</h1>
@@ -291,9 +327,20 @@ export default function TenantsPage() {
                                                 {isUnpaid ? `₩ ${room.unpaidAmount?.toLocaleString()}` : "-"}
                                             </td>
                                             <td className="p-4 text-center">
-                                                <Link href={`/rooms/${room.id}`} className="inline-block text-neutral-400 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50 transition-colors" title="호실 상세 정보">
-                                                    <Info size={18} />
-                                                </Link>
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => handleGenerateInviteLink(room.id)}
+                                                        disabled={isVacant || generatingLink === room.id}
+                                                        className={`flex items-center justify-center p-1.5 rounded-lg transition-colors ${isVacant ? "text-neutral-300 cursor-not-allowed" : "text-blue-600 hover:bg-blue-50"
+                                                            }`}
+                                                        title="초대 링크 복사"
+                                                    >
+                                                        {generatingLink === room.id ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />}
+                                                    </button>
+                                                    <Link href={`/rooms/${room.id}`} className="inline-block text-neutral-400 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50 transition-colors" title="호실 상세 정보">
+                                                        <Info size={16} />
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     );

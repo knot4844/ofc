@@ -1,4 +1,17 @@
 export type RoomStatus = "PAID" | "UNPAID" | "VACANT";
+export type PaymentStatus = "PAID" | "UNPAID" | "PARTIAL";
+
+export interface Payment {
+    id: string;
+    businessId: string;
+    roomId: string;
+    tenantName: string;
+    amount: number;
+    paidAt: string;       // ISO date string
+    month: string;        // e.g. '2026-02'
+    status: PaymentStatus;
+    note?: string;
+}
 
 export interface Tenant {
     id: string;
@@ -33,6 +46,7 @@ export interface Business {
     id: string;
     name: string;
     ownerName: string;
+    registrationNumber?: string;
     address: string;
 }
 

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { allRooms, Room } from "@/lib/data";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useBusiness } from "@/components/providers/BusinessProvider";
+import { Room } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 import { SignaturePad } from "@/components/contracts/SignaturePad";
 import {
     FileSignature,
@@ -17,22 +19,51 @@ import Image from "next/image";
 export default function ContractPage() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { rooms } = useBusiness();
 
     const [isSigned, setIsSigned] = useState(false);
     const [signatureImage, setSignatureImage] = useState<string | null>(null);
     const [signDate, setSignDate] = useState<string | null>(null);
+    const [contentHash, setContentHash] = useState<string | null>(null);
     const [room, setRoom] = useState<Room | null>(null);
+    const [realTenantName, setRealTenantName] = useState<string | null>(null);
+    const [realTenantPhone, setRealTenantPhone] = useState<string | null>(null);
+    const [realTenantAddress, setRealTenantAddress] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     const roomId = params?.roomId as string;
+    const isOnboarding = searchParams?.get("onboarding") === "true";
 
     useEffect(() => {
-        if (roomId) {
-            const foundRoom = allRooms.find(r => r.id === roomId);
-            setRoom(foundRoom || null);
-            setIsLoading(false);
-        }
-    }, [roomId]);
+        const fetchRealTenant = async () => {
+            if (roomId && rooms.length > 0) {
+                const foundRoom = rooms.find(r => r.id === roomId);
+                setRoom(foundRoom || null);
+
+                // Fetch real tenant profile from DB
+                const { data } = await supabase
+                    .from("tenant_profiles")
+                    .select("name, phone, address")
+                    .eq("room_id", roomId)
+                    .maybeSingle();
+
+                if (data) {
+                    setRealTenantName(data.name);
+                    setRealTenantPhone(data.phone);
+                    setRealTenantAddress(data.address);
+                }
+
+                setIsLoading(false);
+            } else if (roomId && rooms.length === 0) {
+                const timer = setTimeout(() => setIsLoading(false), 3000);
+                return () => clearTimeout(timer);
+            }
+        };
+        fetchRealTenant();
+    }, [roomId, rooms]);
 
     if (isLoading) return null;
 
@@ -50,26 +81,59 @@ export default function ContractPage() {
 
     const { tenant, paymentInfo } = room;
 
-    const handleSaveSignature = (base64Data: string) => {
+    // DB의 실제 프로필 데이터가 있으면 그걸 쓰고, 없으면 기존 목업(tenant) 데이터 사용
+    const displayTenantName = realTenantName || tenant?.name || '';
+    const displayTenantPhone = realTenantPhone || tenant?.contact || '';
+    const displayTenantAddress = realTenantAddress || '주소 정보 없음';
+
+    // 계약 내용 스냅샷 (해시 생성에 사용)
+    const contractContent = {
+        roomId,
+        roomName: room.name,
+        tenantName: displayTenantName,
+        deposit: paymentInfo?.deposit ?? 0,
+        monthlyRent: paymentInfo?.monthlyRent ?? 0,
+        dueDate: paymentInfo?.dueDate ?? '',
+        leaseStart: room.leaseStart ?? '',
+        leaseEnd: room.leaseEnd ?? '',
+    };
+
+    const handleSaveSignature = async (base64Data: string) => {
         setSignatureImage(base64Data);
+        setIsSaving(true);
+        setSaveError(null);
 
-        // In a real app, you would send this to Supabase with the roomId
-        /*
-          await supabase
-            .from('contracts')
-            .upsert({ room_id: room.id, signature: base64Data, signed_at: new Date().toISOString() })
-        */
+        try {
+            const res = await fetch('/api/contracts/sign', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    roomId,
+                    signature: base64Data,
+                    tenantName: displayTenantName,
+                    contractContent,
+                }),
+            });
 
-        const now = new Date();
-        const formattedDate = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-        setSignDate(formattedDate);
-        setIsSigned(true);
+            const data = await res.json();
 
-        const isDriveSync = localStorage.getItem("nabido_drive_sync") === "true";
-        if (isDriveSync) {
-            setTimeout(() => {
-                alert("🚀 Google Drive 'Nabido/계약서_백업' 폴더로 전자 계약서 원본(PDF)이 안전하게 자동 동기화되었습니다!");
-            }, 800);
+            if (!res.ok) throw new Error(data.error || '서버 오류');
+
+            // 법적 증거 데이터 저장
+            const now = new Date(data.signedAt);
+            setSignDate(`${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
+            setContentHash(data.contentHash);
+            setIsSigned(true);
+        } catch (e: unknown) {
+            const err = e as { message?: string };
+            // 테이블 없을 경우 fallback - 로컬 상태로만 처리
+            console.warn('서명 저장 실패 (fallback 처리):', err.message);
+            setSaveError('저장 실패 - 로컬 처리됨');
+            const now = new Date();
+            setSignDate(`${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
+            setIsSigned(true);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -81,14 +145,54 @@ export default function ContractPage() {
                         <CheckCircle2 size={40} />
                     </div>
                     <h1 className="text-2xl font-extrabold text-neutral-900 mb-3 tracking-tight">전자 서명이 완료되었습니다</h1>
-                    <p className="text-neutral-500 mb-8 leading-relaxed">
+                    <p className="text-neutral-500 mb-6 leading-relaxed">
                         계약서에 서명이 안전하게 기록되었으며,<br /> 전자서명법에 따라 법적 효력이 발생합니다.
                     </p>
 
-                    <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-5 mb-8 text-left">
-                        <span className="text-xs font-bold text-neutral-400 block mb-1">타임스탬프 (서명 일시)</span>
-                        <span className="text-sm font-mono text-neutral-900 font-bold">{signDate}</span>
+                    {/* 법적 증거 정보 */}
+                    <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-5 mb-6 text-left space-y-3">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <span className="text-xs font-bold text-neutral-400 block mb-1">임차인</span>
+                                <div className="font-bold text-neutral-900 border-b border-neutral-200 pb-2">{displayTenantName}</div>
+                            </div>
+                            <div>
+                                <span className="text-xs font-bold text-neutral-400 block mb-1">연락처</span>
+                                <div className="font-bold text-neutral-900 border-b border-neutral-200 pb-2">{displayTenantPhone}</div>
+                            </div>
+                            <div className="col-span-2">
+                                <span className="text-xs font-bold text-neutral-400 block mb-1">주소</span>
+                                <div className="font-bold text-neutral-900 border-b border-neutral-200 pb-2">{displayTenantAddress}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span className="text-xs font-bold text-neutral-400 block mb-0.5">📅 서명 일시 (타임스탬프)</span>
+                            <span className="text-sm font-mono text-neutral-900 font-bold">{signDate}</span>
+                        </div>
+                        {contentHash && (
+                            <div>
+                                <span className="text-xs font-bold text-neutral-400 block mb-0.5">🔐 계약 내용 해시 (SHA-256)</span>
+                                <span className="text-[11px] font-mono text-neutral-600 break-all">{contentHash}</span>
+                            </div>
+                        )}
+                        {saveError && (
+                            <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                                ⚠️ {saveError} (SQL 실행 후 정식 저장 가능)
+                            </div>
+                        )}
+                        <div className="text-xs text-neutral-400 pt-1 border-t border-neutral-100">
+                            * 서명자 IP는 서버에 기록됩니다 (전자서명법 준거)
+                        </div>
                     </div>
+
+                    {/* 서명 이미지 미리보기 */}
+                    {signatureImage && (
+                        <div className="mb-6">
+                            <span className="text-xs font-bold text-neutral-400 block mb-2">✍️ 서명 이미지</span>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={signatureImage} alt="전자서명" className="border border-neutral-200 rounded-lg mx-auto max-h-20" />
+                        </div>
+                    )}
 
                     <button
                         onClick={() => window.print()}
@@ -98,12 +202,12 @@ export default function ContractPage() {
                         계약서 PDF 다운로드
                     </button>
 
-                    <Link
+                    <a
                         href={`/portal/${room.id}`}
                         className="w-full block py-4 bg-white border border-neutral-200 text-neutral-700 rounded-xl font-bold text-lg hover:bg-neutral-50 transition-colors"
                     >
                         내 마이페이지로 이동
-                    </Link>
+                    </a>
                 </div>
             </div>
         );

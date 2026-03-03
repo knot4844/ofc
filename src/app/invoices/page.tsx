@@ -48,7 +48,7 @@ export default function InvoicesPage() {
                 return {
                     "전자세금계산서 종류": "01", // 일반
                     "작성일자": writeDate,
-                    "공급자 사업자등록번호": currentBusiness?.id === "b_daewoo" ? "123-45-67890" : "987-65-43210",
+                    "공급자 사업자등록번호": currentBusiness?.registrationNumber || "",
                     "공급자 종사업장번호": "0000",
                     "공급자 상호": currentBusiness?.name || "",
                     "공급자 성명": currentBusiness?.ownerName || "",

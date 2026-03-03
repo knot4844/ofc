@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useBusiness } from "@/components/providers/BusinessProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { supabase } from "@/lib/supabase";
 import {
     Clock,
     CheckCircle2,
@@ -12,7 +14,8 @@ import {
     UserCircle,
     FileSignature,
     CalendarClock,
-    Download
+    Download,
+    Lock
 } from "lucide-react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
@@ -21,10 +24,63 @@ export default function TenantPortalPage() {
     const params = useParams();
     const router = useRouter();
     const { rooms, currentBusiness } = useBusiness();
+    const { user } = useAuth();
+    const [authState, setAuthState] = useState<"loading" | "allowed" | "denied" | "unauthenticated">("loading");
 
-    // We use roomId as the main identifier for the tenant's portal link
     const id = params?.tenantId as string;
     const room = rooms.find(r => r.id === id);
+
+    useEffect(() => {
+        const check = async () => {
+            const { data } = await supabase.auth.getSession();
+            const sessionUser = data.session?.user;
+
+            if (!sessionUser) {
+                // 미로그인: 임차인 로그인 페이지로
+                router.push(`/tenant/login?redirect=/portal/${id}`);
+                return;
+            }
+
+            // 관리자(rooms owner)이면 허용
+            if (user) {
+                setAuthState("allowed");
+                return;
+            }
+
+            // 임차인: 본인 방인지 확인
+            const { data: linkedRoom } = await supabase
+                .from("rooms")
+                .select("id")
+                .eq("tenant_auth_id", sessionUser.id)
+                .eq("id", id)
+                .single();
+
+            if (linkedRoom) setAuthState("allowed");
+            else setAuthState("denied");
+        };
+        if (id) check();
+    }, [id, user, router]);
+
+    if (authState === "loading") {
+        return (
+            <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    if (authState === "denied") {
+        return (
+            <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-sm w-full border border-neutral-200">
+                    <Lock className="mx-auto text-rose-500 mb-4" size={48} />
+                    <h2 className="text-xl font-bold text-neutral-900 mb-2">접근 권한 없음</h2>
+                    <p className="text-neutral-500 text-sm mb-6">본인의 계약 페이지만 확인할 수 있습니다.</p>
+                    <Link href="/tenant/login" className="text-blue-600 font-semibold text-sm hover:underline">로그인 페이지로</Link>
+                </div>
+            </div>
+        );
+    }
 
     if (!room || room.status === "VACANT") {
         return (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, CheckCircle2, Building2, Zap, Shield, BarChart3, MessageSquare, CreditCard, FileText, AlertCircle } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -11,44 +12,36 @@ export default function LandingPage() {
         <div className="min-h-screen bg-white">
             {/* Header */}
             <header className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-md z-50 border-b border-neutral-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                {/* Row 1: Logo + CTA */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <Building2 size={20} className="text-white" />
                         </div>
                         <span className="font-bold text-xl tracking-tight text-neutral-900">Nabido</span>
                     </Link>
-                    <nav className="hidden md:flex gap-8 items-center">
-                        <div className="relative group">
-                            <Link href="#features" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors py-6">기능 소개</Link>
-                            {/* Dropdown Menu */}
-                            <div className="absolute left-1/2 -translate-x-1/2 top-full w-56 bg-white rounded-xl shadow-2xl border border-neutral-100 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0 before:absolute before:-top-4 before:left-0 before:w-full before:h-4">
-                                <Link href="#feature-kakao" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">카카오톡 일일 브리핑</Link>
-                                <Link href="#feature-match" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">AI 수납 자동 확인</Link>
-                                <Link href="#feature-tax" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">세금계산서 원클릭 자동 발행</Link>
-                                <Link href="#feature-unpaid" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">미납자 알림 자동 관리</Link>
-                                <Link href="#feature-portal" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">스마트 임차인 포털 & 카드결제</Link>
-                                <Link href="#feature-contract" className="block px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors">100% 무료 스마트 전자계약</Link>
-                            </div>
-                        </div>
-                        <Link href="/pricing" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors py-2">요금 안내</Link>
-                    </nav>
                     <div className="flex items-center gap-4">
-                        {user ? (
-                            <Link href="/dashboard" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95">대시보드로 가기</Link>
-                        ) : (
-                            <>
-                                <Link href="/login" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">로그인</Link>
-                                <Link href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95">무료로 시작하기</Link>
-                            </>
-                        )}
+                        <Link href="/login" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">로그인</Link>
+                        <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95">무료 가입</Link>
                     </div>
+                </div>
+                {/* Row 2: Feature nav (all screen sizes, wraps to 2 lines on mobile) */}
+                <div className="border-t border-neutral-100 bg-white/90">
+                    <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap gap-x-5 gap-y-1 py-1.5">
+                        <Link href="#feature-kakao" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">카카오톡 브리핑</Link>
+                        <Link href="#feature-match" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">AI 수납 확인</Link>
+                        <Link href="#feature-tax" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">세금계산서 발행</Link>
+                        <Link href="#feature-unpaid" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">미납자 관리</Link>
+                        <Link href="#feature-portal" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">임차인 포털</Link>
+                        <Link href="#feature-contract" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors py-1 whitespace-nowrap">전자계약</Link>
+                        <Link href="/pricing" className="text-xs sm:text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors py-1 whitespace-nowrap">요금 안내</Link>
+                    </nav>
                 </div>
             </header>
 
             <main>
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+                <section className="relative pt-36 pb-20 md:pt-52 md:pb-32 overflow-hidden">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-white to-white -z-10"></div>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -71,7 +64,7 @@ export default function LandingPage() {
 
                         <div className="mt-16 sm:mt-24 mx-auto max-w-5xl rounded-2xl overflow-hidden shadow-2xl border border-neutral-200/60 relative animate-in zoom-in-95 fade-in duration-1000 delay-500 bg-black">
                             {/* Dashboard Mockup Image */}
-                            <img src="/images/napdo_royal_blue_hero_1771798110526.png" alt="Nabido 대시보드" className="w-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                            <Image src="/images/napdo_royal_blue_hero_1771798110526.png" alt="Nabido 대시보드" width={1200} height={750} className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" priority />
                         </div>
                     </div>
                 </section>
@@ -104,8 +97,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/feature_kakao.png" alt="AI 일일 브리핑" className="w-full aspect-square object-cover" />
+                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl transition-transform duration-500 hover:scale-105">
+                                        <Image src="/images/feature_kakao.png" alt="AI 일일 브리핑" width={800} height={600} className="w-full h-auto" />
                                     </div>
                                 </div>
                             </div>
@@ -129,8 +122,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl -skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/feature_match.png" alt="AI 통장 매칭" className="w-full aspect-square object-cover" />
+                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl transition-transform duration-500 hover:scale-105">
+                                        <Image src="/images/feature_match.png" alt="AI 통장 매칭" width={800} height={600} className="w-full h-auto" />
                                     </div>
                                 </div>
                             </div>
@@ -154,8 +147,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/feature_tax.png" alt="세금계산서 발행" className="w-full aspect-square object-cover" />
+                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 shadow-2xl transition-transform duration-500 hover:scale-105">
+                                        <Image src="/images/feature_tax.png" alt="세금계산서 발행" width={800} height={600} className="w-full h-auto" />
                                     </div>
                                 </div>
                             </div>
@@ -179,8 +172,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl -skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/feature_unpaid.png" alt="미납자 자동 관리" className="w-full aspect-square object-cover" />
+                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl transition-transform duration-500 hover:scale-105">
+                                        <Image src="/images/feature_unpaid.png" alt="미납자 자동 관리" width={800} height={600} className="w-full h-auto" />
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +198,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex-1 w-full">
                                     <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500 border-8 border-neutral-900/5 bg-neutral-900 p-2 mx-auto">
-                                        <img src="/images/feature_portal.png" alt="임차인 카드 납부" className="w-full aspect-square object-cover rounded-2xl" />
+                                        <Image src="/images/feature_portal.png" alt="임차인 카드 납부" width={800} height={1000} className="w-full h-auto rounded-2xl" />
                                     </div>
                                 </div>
                             </div>
@@ -229,8 +222,8 @@ export default function LandingPage() {
                                     </ul>
                                 </div>
                                 <div className="flex-1 w-full">
-                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl skew-y-2 transform transition-transform hover:skew-y-0 duration-500">
-                                        <img src="/images/feature_contract.png" alt="스마트 전자계약" className="w-full aspect-square object-cover" />
+                                    <div className="relative rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-50 shadow-2xl transition-transform duration-500 hover:scale-105">
+                                        <Image src="/images/feature_contract.png" alt="스마트 전자계약" width={800} height={600} className="w-full h-auto" />
                                     </div>
                                 </div>
                             </div>

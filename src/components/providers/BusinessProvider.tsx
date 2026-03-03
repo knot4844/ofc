@@ -2,8 +2,50 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Room, Business } from "@/lib/data";
+import { Room, Business, Payment } from "@/lib/data";
 import { useAuth } from "./AuthProvider";
+
+// Supabase DB 행 타입 정의
+interface BusinessRow {
+    id: string;
+    name: string;
+    owner_name?: string;
+    registration_number?: string;
+    address?: string;
+}
+
+interface RoomRow {
+    id: string;
+    business_id: string;
+    name: string;
+    status: "PAID" | "UNPAID" | "VACANT";
+    auto_notify: boolean;
+    unpaid_months?: number;
+    unpaid_amount?: number;
+    lease_start?: string;
+    lease_end?: string;
+    deposit?: number;
+    monthly_rent?: number;
+    due_date?: string;
+    is_vat_included?: boolean;
+    tenant_id?: string;
+    tenant_name?: string;
+    tenant_contact?: string;
+    tenant_company_name?: string;
+    tenant_business_reg_num?: string;
+}
+
+interface PaymentRow {
+    id: string;
+    business_id: string;
+    room_id: string;
+    tenant_name: string;
+    amount: number;
+    paid_at: string;
+    month: string;
+    status: "PAID" | "UNPAID" | "PARTIAL";
+    note?: string;
+}
 
 interface BusinessContextType {
     selectedBusinessId: string;
@@ -12,7 +54,9 @@ interface BusinessContextType {
     allBusinesses: Business[];
     rooms: Room[];
     setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
+    payments: Payment[];
     getRoomsByBusiness: (businessId: string) => Room[];
+    getPaymentsByBusiness: (businessId: string) => Payment[];
     isLoading: boolean;
 }
 
@@ -23,6 +67,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     const [selectedBusinessId, setSelectedBusinessId] = useState<string>("ALL");
     const [rooms, setRooms] = useState<Room[]>([]);
     const [allBusinesses, setAllBusinesses] = useState<Business[]>([]);
+    const [payments, setPayments] = useState<Payment[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const currentBusiness = allBusinesses.find(b => b.id === selectedBusinessId);
@@ -46,10 +91,11 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
                 if (bError) throw bError;
 
                 if (bData) {
-                    const mappedBusinesses: Business[] = bData.map((d: any) => ({
+                    const mappedBusinesses: Business[] = (bData as BusinessRow[]).map((d) => ({
                         id: d.id,
                         name: d.name,
                         ownerName: d.owner_name || user.email?.split('@')[0] || "대표님",
+                        registrationNumber: d.registration_number,
                         address: d.address || ""
                     }));
                     setAllBusinesses(mappedBusinesses);
@@ -63,7 +109,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
                 if (rError) throw rError;
 
                 if (rData && rData.length > 0) {
-                    const mappedRooms: Room[] = rData.map((d: any) => ({
+                    const mappedRooms: Room[] = (rData as RoomRow[]).map((d) => ({
                         id: d.id,
                         businessId: d.business_id,
                         name: d.name,
@@ -74,20 +120,43 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
                         leaseStart: d.lease_start,
                         leaseEnd: d.lease_end,
                         paymentInfo: {
-                            deposit: d.deposit,
-                            monthlyRent: d.monthly_rent,
-                            dueDate: d.due_date,
-                            isVATIncluded: d.is_vat_included
+                            deposit: d.deposit ?? 0,
+                            monthlyRent: d.monthly_rent ?? 0,
+                            dueDate: d.due_date ?? "매월 25일",
+                            isVATIncluded: d.is_vat_included ?? false
                         },
                         tenant: d.tenant_id ? {
                             id: d.tenant_id,
-                            name: d.tenant_name,
+                            name: d.tenant_name ?? "미확인",
                             contact: d.tenant_contact,
                             companyName: d.tenant_company_name,
                             businessRegistrationNumber: d.tenant_business_reg_num
                         } : null
                     }));
                     setRooms(mappedRooms);
+                }
+
+                // 3. Fetch Payments
+                const { data: pData, error: pError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .order('paid_at', { ascending: false });
+                if (pError) {
+                    // payments 테이블이 없을 경우 graceful 처리
+                    console.warn('payments 테이블 없음 (아직 마이그레이션 미실행):', pError.message);
+                } else if (pData) {
+                    const mappedPayments: Payment[] = (pData as PaymentRow[]).map((d) => ({
+                        id: d.id,
+                        businessId: d.business_id,
+                        roomId: d.room_id,
+                        tenantName: d.tenant_name,
+                        amount: d.amount,
+                        paidAt: d.paid_at,
+                        month: d.month,
+                        status: d.status,
+                        note: d.note,
+                    }));
+                    setPayments(mappedPayments);
                 }
             } catch (err) {
                 console.error("Failed to fetch data from Supabase:", err);
@@ -104,6 +173,11 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
         return rooms.filter(r => r.businessId === businessId);
     };
 
+    const getPaymentsByBusiness = (businessId: string) => {
+        if (businessId === "ALL") return payments;
+        return payments.filter(p => p.businessId === businessId);
+    };
+
     return (
         <BusinessContext.Provider value={{
             selectedBusinessId,
@@ -112,7 +186,9 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
             allBusinesses,
             rooms,
             setRooms,
+            payments,
             getRoomsByBusiness,
+            getPaymentsByBusiness,
             isLoading
         }}>
             {children}

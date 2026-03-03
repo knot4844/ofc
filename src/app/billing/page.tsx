@@ -5,7 +5,8 @@ import { useBusiness } from "@/components/providers/BusinessProvider";
 import { Calendar, CheckCircle2, AlertCircle, Play } from "lucide-react";
 
 export default function BillingAutomationPage() {
-    const { currentBusiness } = useBusiness();
+    const { currentBusiness, getRoomsByBusiness, selectedBusinessId } = useBusiness();
+    const rooms = getRoomsByBusiness(selectedBusinessId);
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
@@ -27,7 +28,7 @@ export default function BillingAutomationPage() {
                     <p className="text-sm text-neutral-500 mb-6">등록된 임차인의 계약정보(보증금, 월세, 약정일)를 바탕으로 이번 달 청구 기준 데이터를 생성합니다.</p>
                     <div className="bg-neutral-50 rounded-lg p-4 flex items-center gap-3">
                         <CheckCircle2 className="text-emerald-500" />
-                        <span className="text-sm font-bold">23개 호실 데이터 스캔 완료</span>
+                        <span className="text-sm font-bold">{rooms.length}개 호실 데이터 스캔 완료</span>
                     </div>
                 </div>
 

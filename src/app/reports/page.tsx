@@ -149,7 +149,7 @@ export default function ReportsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Recharts Bar Chart */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-neutral-200 min-h-[400px] flex flex-col">
-                    <h3 className="text-lg font-bold text-neutral-900 mb-6">월별 임대 수익 추이 (2025년)</h3>
+                    <h3 className="text-lg font-bold text-neutral-900 mb-6">월별 임대 수익 추이 ({new Date().getFullYear()}년)</h3>
                     <div className="flex-1 w-full h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
@@ -172,8 +172,7 @@ export default function ReportsPage() {
                                 />
                                 <RechartsTooltip
                                     cursor={{ fill: '#f8fafc' }}
-                                    formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, '임대수익']}
-                                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    formatter={(value: number | undefined) => [`₩ ${Number(value).toLocaleString()}`, '임대수익']}
                                 />
                                 <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                             </BarChart>
@@ -201,8 +200,7 @@ export default function ReportsPage() {
                                     ))}
                                 </Pie>
                                 <RechartsTooltip
-                                    formatter={(value: any) => [`${Number(value)}호실`, '호실 수']}
-                                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                    formatter={(value: number | undefined) => [`${Number(value)}호실`, '호실 수']}
                                 />
                                 <Legend verticalAlign="bottom" height={36} iconType="circle" />
                             </RechartsPieChart>

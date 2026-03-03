@@ -73,14 +73,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 3. Route Guard
     useEffect(() => {
         if (!isLoading) {
-            const publicRoutes = ['/', '/login', '/master-admin', '/terms', '/privacy'];
+            // Check for OAuth redirect (PKCE or Implicit)
+            if (typeof window !== 'undefined' &&
+                (window.location.search.includes('code=') || window.location.hash.includes('access_token='))) {
+                return; // Let the callback handler take over
+            }
+
+            const publicRoutes = ['/', '/login', '/signup', '/master-admin', '/terms', '/privacy'];
             const isPublicPath = publicRoutes.includes(pathname) || pathname?.startsWith('/pricing') || pathname?.startsWith('/auth/');
 
-            if (!user && !isPublicPath) {
-                // Not logged in and trying to access private route -> redirect to login
+            // Allow tenant flows to manage their own auth (they have local guards)
+            const isTenantPath = pathname?.startsWith('/invite') || pathname?.startsWith('/tenant') || pathname?.startsWith('/portal') || pathname?.startsWith('/contracts');
+
+            if (!user && !isPublicPath && !isTenantPath) {
+                // Not logged in and trying to access landlord private route -> redirect to login
                 router.push('/login');
-            } else if (user && pathname === '/login') {
-                // Logged in but on login page -> redirect to dashboard
+            } else if (user && (pathname === '/login' || pathname === '/signup')) {
+                // Logged in but on login/signup page -> redirect to dashboard
                 router.push('/dashboard');
             }
         }
