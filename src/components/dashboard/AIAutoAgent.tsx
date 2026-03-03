@@ -110,7 +110,7 @@ export default function AIAutoAgent() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        text: `*🚨 [Noado 알림톡 발송 완료]*\n*대상:* ${tenantName} 고객님\n\n> ${message.replace(/\n/g, '\n> ')}`
+                        text: `*🚨 [noado 알림톡 발송 완료]*\n*대상:* ${tenantName} 고객님\n\n> ${message.replace(/\n/g, '\n> ')}`
                     })
                 });
             } catch (err) {

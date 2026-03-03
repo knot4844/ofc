@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Noado | 임대 자동화 시스템",
+  title: "noado | 임대 자동화 시스템",
   description: "소규모 임대 사업자를 위한 효율적인 관리 솔루션",
+  icons: { icon: "/icon.png", apple: "/icon.png" },
 };
 
 export default function RootLayout({

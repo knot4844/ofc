@@ -60,7 +60,7 @@ export default function SignupPage() {
                             <span className="text-white font-black text-2xl tracking-tighter">DW</span>
                         </div>
                         <h2 className="text-center text-3xl font-extrabold text-neutral-900 tracking-tight group-hover:text-blue-600 transition-colors">
-                            Noado
+                            noado
                         </h2>
                     </Link>
                     <div className="mt-3 flex items-center gap-2 px-4 py-1.5 bg-blue-50 rounded-full border border-blue-100">

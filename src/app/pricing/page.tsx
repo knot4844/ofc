@@ -82,7 +82,7 @@ export default function PricingPage() {
                         </div>
 
                         <button
-                            onClick={() => setSelectedPlan({ amount: 9900, name: 'Noado Beginner 요금제 (월정액)' })}
+                            onClick={() => setSelectedPlan({ amount: 9900, name: 'noado Beginner 요금제 (월정액)' })}
                             className="w-full py-4 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all flex justify-center items-center gap-2 mb-8 group"
                         >
                             Beginner 요금제로 업그레이드
@@ -119,7 +119,7 @@ export default function PricingPage() {
                         </div>
 
                         <button
-                            onClick={() => setSelectedPlan({ amount: 19900, name: 'Noado Pro 요금제 (월정액)' })}
+                            onClick={() => setSelectedPlan({ amount: 19900, name: 'noado Pro 요금제 (월정액)' })}
                             className="w-full py-4 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all flex justify-center items-center gap-2 mb-8 group"
                         >
                             Pro 요금제로 업그레이드

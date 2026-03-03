@@ -139,7 +139,7 @@ export default function TenantPortalPage() {
             {/* Minimal Header */}
             <header className="bg-white border-b border-neutral-200 px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="max-w-md mx-auto flex items-center justify-between">
-                    <span className="font-exrabold text-lg text-neutral-900 tracking-tight">{currentBusiness?.name || 'Noado'}</span>
+                    <span className="font-exrabold text-lg text-neutral-900 tracking-tight">{currentBusiness?.name || 'noado'}</span>
                     <UserCircle size={24} className="text-neutral-400" />
                 </div>
             </header>

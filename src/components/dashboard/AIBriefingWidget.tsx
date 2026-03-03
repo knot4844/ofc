@@ -103,7 +103,7 @@ export function AIBriefingWidget() {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    text: `*📊 [Noado 오늘의 통계 브리핑]*\n\n${report}`
+                                    text: `*📊 [noado 오늘의 통계 브리핑]*\n\n${report}`
                                 })
                             });
                             alert("Slack으로 브리핑 전송이 완료되었습니다.");
