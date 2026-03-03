@@ -31,7 +31,7 @@ export const toggleDemoLogin = (status: boolean) => {
     if (typeof window === 'undefined') return;
     if (status) {
         localStorage.setItem('local_demo_login', 'true');
-        window.location.href = '/';
+        window.location.href = '/dashboard';
     } else {
         localStorage.removeItem('local_demo_login');
         window.location.href = '/login';
