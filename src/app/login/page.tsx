@@ -64,16 +64,14 @@ export default function LoginPage() {
 
     const handleSocial = async (provider: 'google' | 'kakao') => {
         try {
-            const options: Parameters<typeof supabase.auth.signInWithOAuth>[0]['options'] = {
-                redirectTo: `${window.location.origin}/auth/callback`,
-            };
-            // KOE205 방지: 카카오는 scope를 명시적으로 지정해야 함
-            if (provider === 'kakao') {
-                options.queryParams = {
-                    scope: 'profile_nickname profile_image account_email',
-                };
-            }
-            await supabase.auth.signInWithOAuth({ provider, options });
+            await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                    // KOE205 방지: scopes로 정확히 전달
+                    scopes: provider === 'kakao' ? 'profile_nickname profile_image account_email' : undefined,
+                },
+            });
         } catch {
             setMessage({ type: 'error', text: `${provider} 로그인 중 오류가 발생했습니다.` });
         }
