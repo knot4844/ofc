@@ -72,19 +72,25 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
 
     const currentBusiness = allBusinesses.find(b => b.id === selectedBusinessId);
 
-    const useSupabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder-project.supabase.co';
+    const isDemoUser = user?.id === 'demo-user-123';
+    const useSupabase = !isDemoUser && !!user && process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder-project.supabase.co';
 
     // Fetch businesses and rooms from Supabase
     useEffect(() => {
-        if (!useSupabase || !user) {
-            setAllBusinesses([]);
-            setRooms([]);
+        if (!useSupabase) {
+            // 데모 모드 or 미로그인: mock 데이터 사용
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { businesses: mockB, allRooms: mockR, payments: mockP } = require('@/lib/data');
+            setAllBusinesses(mockB);
+            setRooms(mockR);
+            if (mockP) setPayments(mockP);
             return;
         }
 
         const fetchData = async () => {
             setIsLoading(true);
             try {
+
                 // 1. Fetch Businesses (Auto-filtered by RLS owner_id)
                 // Since Demo User sets owner_id to NULL, demo users will get those rows too!
                 const { data: bData, error: bError } = await supabase.from('businesses').select('*');

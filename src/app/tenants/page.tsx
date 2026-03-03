@@ -3,14 +3,17 @@
 import React, { useState, useRef } from "react";
 import { useBusiness } from "@/components/providers/BusinessProvider";
 import { Room } from "@/lib/data";
-import { Search, Info, MessageSquare, AlertCircle, Upload, Download, Loader2, Link as LinkIcon, CheckCircle2 } from "lucide-react";
+import { Search, Info, MessageSquare, AlertCircle, Upload, Download, Loader2, Link as LinkIcon, Plus, X } from "lucide-react";
 import * as XLSX from "xlsx";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function TenantsPage() {
-    const { selectedBusinessId, currentBusiness, getRoomsByBusiness, setRooms, rooms: allContextRooms, isLoading: isRoomsLoading } = useBusiness();
+    const { selectedBusinessId, currentBusiness, getRoomsByBusiness, setRooms, rooms: allContextRooms, isLoading: isRoomsLoading, allBusinesses } = useBusiness();
+    const { user } = useAuth();
     const rooms = getRoomsByBusiness(selectedBusinessId);
+    const isDemoUser = user?.id === 'demo-user-123';
 
     const [searchQuery, setSearchQuery] = useState("");
     const [showOnlyUnpaid, setShowOnlyUnpaid] = useState(false);
@@ -18,11 +21,48 @@ export default function TenantsPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [generatingLink, setGeneratingLink] = useState<string | null>(null);
+    const [showAddRoom, setShowAddRoom] = useState(false);
+    const [addRoomForm, setAddRoomForm] = useState({ name: '', tenantName: '', tenantContact: '', monthlyRent: 0, deposit: 0, leaseStart: '', leaseEnd: '', businessId: '' });
+    const [isAddingRoom, setIsAddingRoom] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const showNotification = (type: 'success' | 'error', text: string) => {
         setNotification({ type, text });
         setTimeout(() => setNotification(null), 3000);
+    };
+
+    // 호실 추가 (실제 사용자만)
+    const handleAddRoom = async () => {
+        const bizId = addRoomForm.businessId || allBusinesses[0]?.id;
+        if (!bizId) return showNotification('error', '사업장을 먼저 추가해주세요.');
+        if (!addRoomForm.name) return showNotification('error', '호실명을 입력해주세요.');
+        setIsAddingRoom(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('/api/rooms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session!.access_token}` },
+                body: JSON.stringify({ ...addRoomForm, businessId: bizId, status: addRoomForm.tenantName ? 'PAID' : 'VACANT' }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+            const newRoom: Room = {
+                id: data.room.id, businessId: bizId, name: addRoomForm.name,
+                status: addRoomForm.tenantName ? 'PAID' : 'VACANT',
+                autoNotify: true, unpaidMonths: 0, unpaidAmount: 0,
+                leaseStart: addRoomForm.leaseStart, leaseEnd: addRoomForm.leaseEnd,
+                paymentInfo: { monthlyRent: addRoomForm.monthlyRent, deposit: addRoomForm.deposit, dueDate: '매월 25일', isVATIncluded: false },
+                tenant: addRoomForm.tenantName ? { id: data.room.id, name: addRoomForm.tenantName, contact: addRoomForm.tenantContact } : null
+            };
+            setRooms(prev => [...prev, newRoom]);
+            setShowAddRoom(false);
+            setAddRoomForm({ name: '', tenantName: '', tenantContact: '', monthlyRent: 0, deposit: 0, leaseStart: '', leaseEnd: '', businessId: '' });
+            showNotification('success', `${addRoomForm.name} 호실이 추가되었습니다.`);
+        } catch (e: any) {
+            showNotification('error', e.message);
+        } finally {
+            setIsAddingRoom(false);
+        }
     };
 
     const handleGenerateInviteLink = async (roomId: string) => {
@@ -184,6 +224,58 @@ export default function TenantsPage() {
                     {notification.text}
                 </div>
             )}
+            {/* 호실 추가 모달 */}
+            {showAddRoom && (
+                <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-neutral-900">새 호실 추가</h2>
+                            <button onClick={() => setShowAddRoom(false)} className="p-2 hover:bg-neutral-100 rounded-lg"><X size={18} /></button>
+                        </div>
+                        {allBusinesses.length > 1 && (
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">사업장</label>
+                                <select className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none" value={addRoomForm.businessId} onChange={e => setAddRoomForm({ ...addRoomForm, businessId: e.target.value })}>
+                                    {allBusinesses.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                </select>
+                            </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">호실명 *</label>
+                                <input className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" placeholder="101호" value={addRoomForm.name} onChange={e => setAddRoomForm({ ...addRoomForm, name: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">월세 (원)</label>
+                                <input type="number" className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" value={addRoomForm.monthlyRent} onChange={e => setAddRoomForm({ ...addRoomForm, monthlyRent: Number(e.target.value) })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">임차인명</label>
+                                <input className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" placeholder="홍길동" value={addRoomForm.tenantName} onChange={e => setAddRoomForm({ ...addRoomForm, tenantName: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">연락처</label>
+                                <input className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" placeholder="010-0000-0000" value={addRoomForm.tenantContact} onChange={e => setAddRoomForm({ ...addRoomForm, tenantContact: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">계약 시작일</label>
+                                <input type="date" className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" value={addRoomForm.leaseStart} onChange={e => setAddRoomForm({ ...addRoomForm, leaseStart: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-neutral-600 mb-1.5">계약 종료일</label>
+                                <input type="date" className="w-full px-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:border-blue-500" value={addRoomForm.leaseEnd} onChange={e => setAddRoomForm({ ...addRoomForm, leaseEnd: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button onClick={() => setShowAddRoom(false)} className="flex-1 py-2.5 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-600 hover:bg-neutral-50">취소</button>
+                            <button onClick={handleAddRoom} disabled={isAddingRoom} className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
+                                {isAddingRoom ? <Loader2 size={16} className="animate-spin mx-auto" /> : '추가하기'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
                 <div>
                     <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">호실 및 임차인 관리</h1>
@@ -193,6 +285,11 @@ export default function TenantsPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {!isDemoUser && (
+                        <button onClick={() => setShowAddRoom(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-all text-sm">
+                            <Plus size={16} /> 호실 추가
+                        </button>
+                    )}
                     <button
                         onClick={handleBulkNotification}
                         disabled={selectedRooms.size === 0}
