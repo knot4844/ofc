@@ -2,36 +2,48 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Send, Building2, CheckCircle2, Mail, ArrowRight } from "lucide-react"; // Added Send, Building2, CheckCircle2, kept Mail, ArrowRight
+import { Mail, ArrowRight, Lock, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { toggleDemoLogin } from "@/components/providers/AuthProvider"; // New import
+import { toggleDemoLogin } from "@/components/providers/AuthProvider";
 
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [mode, setMode] = useState<"password" | "magic">("password");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    const handleEmailLogin = async (e: React.FormEvent) => {
+    const handlePasswordLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage(null);
-
         try {
-            // Use Magic Link for simple email login without password
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            router.push("/dashboard");
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message === 'Invalid login credentials' ? '이메일 또는 비밀번호가 올바르지 않습니다.' : error.message });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleMagicLink = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+        try {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
-                options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
-                },
+                options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
             });
-
             if (error) throw error;
-
-            setMessage({ type: 'success', text: '로그인 링크가 포함된 이메일이 발송되었습니다. 메일함을 확인해주세요!' });
+            setMessage({ type: 'success', text: '로그인 링크가 발송되었습니다. 메일함을 확인해주세요!' });
         } catch (error: any) {
-            setMessage({ type: 'error', text: error.message || '로그인 처리 중 오류가 발생했습니다.' });
+            setMessage({ type: 'error', text: error.message });
         } finally {
             setLoading(false);
         }
@@ -41,18 +53,13 @@ export default function LoginPage() {
         try {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
-                options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
-                },
+                options: { redirectTo: `${window.location.origin}/auth/callback` },
             });
             if (error) throw error;
         } catch (error: any) {
             setMessage({ type: 'error', text: `${provider} 로그인 중 오류가 발생했습니다.` });
         }
     };
-
-    // Naver login via Supabase requires specific setup, keeping it simple with Google/Kakao/Email first
-    // to ensure robust delivery for the demo.
 
     return (
         <div className="absolute inset-0 z-50 bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -81,23 +88,23 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    {/* Social Logins */}
+                    {/* 소셜 로그인 */}
                     <div className="space-y-3">
                         <button
                             onClick={() => handleSocialLogin('kakao')}
-                            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-neutral-900 bg-[#FEE500] hover:bg-[#FEE500]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FEE500] transition-colors"
+                            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-neutral-900 bg-[#FEE500] hover:bg-[#FEE500]/90 transition-colors"
                         >
                             카카오톡으로 3초 만에 시작하기
                         </button>
                         <button
                             onClick={() => handleSocialLogin('google')}
-                            className="w-full flex justify-center items-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm text-sm font-bold text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 transition-colors"
+                            className="w-full flex justify-center items-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm text-sm font-bold text-neutral-700 bg-white hover:bg-neutral-50 transition-colors"
                         >
                             Google 계정으로 계속하기
                         </button>
                     </div>
 
-                    <div className="mt-8 mb-6">
+                    <div className="my-6">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-neutral-200" />
@@ -108,35 +115,93 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Email / Magic Link Login */}
-                    <form className="space-y-5" onSubmit={handleEmailLogin}>
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 sr-only">
-                                이메일 주소
-                            </label>
-                            <div className="mt-1 relative rounded-md shadow-sm">
+                    {/* 로그인 탭 */}
+                    <div className="flex rounded-xl border border-neutral-200 overflow-hidden mb-5">
+                        <button
+                            onClick={() => { setMode("password"); setMessage(null); }}
+                            className={`flex-1 py-2 text-sm font-bold transition-colors ${mode === "password" ? "bg-neutral-900 text-white" : "bg-white text-neutral-500 hover:bg-neutral-50"}`}
+                        >
+                            비밀번호 로그인
+                        </button>
+                        <button
+                            onClick={() => { setMode("magic"); setMessage(null); }}
+                            className={`flex-1 py-2 text-sm font-bold transition-colors ${mode === "magic" ? "bg-neutral-900 text-white" : "bg-white text-neutral-500 hover:bg-neutral-50"}`}
+                        >
+                            이메일 링크
+                        </button>
+                    </div>
+
+                    {mode === "password" ? (
+                        <form className="space-y-4" onSubmit={handlePasswordLogin}>
+                            <div>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-neutral-400" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        className="block w-full pl-10 sm:text-sm border-neutral-300 rounded-xl py-3 border focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="이메일 주소"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-neutral-400" />
+                                    </div>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        className="block w-full pl-10 pr-10 sm:text-sm border-neutral-300 rounded-xl py-3 border focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="비밀번호"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading || !email || !password}
+                                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-neutral-900 hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                            >
+                                {loading ? '로그인 중...' : (
+                                    <>
+                                        로그인
+                                        <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    ) : (
+                        <form className="space-y-4" onSubmit={handleMagicLink}>
+                            <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Mail className="h-5 w-5 text-neutral-400" />
                                 </div>
                                 <input
-                                    id="email"
-                                    name="email"
                                     type="email"
-                                    autoComplete="email"
                                     required
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={e => setEmail(e.target.value)}
                                     className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-neutral-300 rounded-xl py-3 border"
-                                    placeholder="admin@example.com"
+                                    placeholder="이메일 주소"
                                 />
                             </div>
-                        </div>
-
-                        <div>
                             <button
                                 type="submit"
                                 disabled={loading || !email}
-                                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-neutral-900 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-neutral-900 hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
                             >
                                 {loading ? '메일 전송 중...' : (
                                     <>
@@ -145,8 +210,8 @@ export default function LoginPage() {
                                     </>
                                 )}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    )}
 
                     <div className="mt-8 pt-8 border-t border-neutral-100">
                         <button
@@ -155,9 +220,6 @@ export default function LoginPage() {
                         >
                             🚀 데모 환경 체험하기 (비회원 로그인)
                         </button>
-                        <p className="text-center text-xs text-neutral-400 mt-3">
-                            로컬 테스트를 위해 인증 절차 없이 임시 계정으로 접속합니다.
-                        </p>
                     </div>
 
                 </div>
