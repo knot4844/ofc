@@ -9,20 +9,11 @@ export default function PricingPage() {
     const [selectedPlan, setSelectedPlan] = useState<{ amount: number, name: string } | null>(null);
 
     return (
-        <div className="min-h-screen bg-neutral-50 pb-24 relative overflow-hidden">
-
-            {/* Home Navigation */}
-            <div className="absolute top-6 left-6 md:top-8 md:left-8 z-50">
-                <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center transform group-hover:-translate-y-0.5 transition-transform shadow-md">
-                        <Building2 size={20} className="text-white" />
-                    </div>
-                    <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">Nabido</span>
-                </Link>
-            </div>
+        <div className="bg-neutral-50 pb-24 relative">
 
             {/* Background Decorations */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-100/50 to-transparent blur-3xl -z-10 rounded-full"></div>
+
 
             <div className="max-w-7xl mx-auto px-4 md:px-8 pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
