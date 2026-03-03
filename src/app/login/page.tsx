@@ -68,8 +68,8 @@ export default function LoginPage() {
                 provider,
                 options: {
                     redirectTo: `${window.location.origin}/auth/callback`,
-                    // KOE205 방지: scopes로 정확히 전달
-                    scopes: provider === 'kakao' ? 'profile_nickname profile_image account_email' : undefined,
+                    // KOE205 방지: 비즈니스 앱 심사 전까지는 이메일 스코프 제외
+                    scopes: provider === 'kakao' ? 'profile_nickname profile_image' : undefined,
                 },
             });
         } catch {
