@@ -24,7 +24,7 @@ export default function SettingsPage() {
     useEffect(() => { setBusinesses(allBusinesses); }, [allBusinesses]);
 
     useEffect(() => {
-        const stored = localStorage.getItem("nabido_slack_webhook");
+        const stored = localStorage.getItem("noado_slack_webhook");
         if (stored) setSlackWebhook(stored);
     }, []);
 
@@ -34,7 +34,7 @@ export default function SettingsPage() {
     };
 
     const handleSave = () => {
-        localStorage.setItem("nabido_slack_webhook", slackWebhook);
+        localStorage.setItem("noado_slack_webhook", slackWebhook);
         setIsSaved(true);
         setTimeout(() => setIsSaved(false), 2000);
     };

@@ -91,7 +91,7 @@ export function AIBriefingWidget() {
             <div className="flex flex-col sm:flex-row justify-end relative z-10 gap-2">
                 <button
                     onClick={async () => {
-                        const webhook = localStorage.getItem("nabido_slack_webhook");
+                        const webhook = localStorage.getItem("noado_slack_webhook");
                         if (!webhook) {
                             alert("환경설정에서 Slack Webhook URL을 먼저 등록해주세요.");
                             return;
@@ -103,7 +103,7 @@ export function AIBriefingWidget() {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    text: `*📊 [Nabido 오늘의 통계 브리핑]*\n\n${report}`
+                                    text: `*📊 [Noado 오늘의 통계 브리핑]*\n\n${report}`
                                 })
                             });
                             alert("Slack으로 브리핑 전송이 완료되었습니다.");

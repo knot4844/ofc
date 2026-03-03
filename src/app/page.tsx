@@ -18,7 +18,7 @@ export default function LandingPage() {
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <Building2 size={20} className="text-white" />
                         </div>
-                        <span className="font-bold text-xl tracking-tight text-neutral-900">Nabido</span>
+                        <span className="font-bold text-xl tracking-tight text-neutral-900">Noado</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <Link href="/login" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">로그인</Link>
@@ -64,7 +64,7 @@ export default function LandingPage() {
 
                         <div className="mt-16 sm:mt-24 mx-auto max-w-5xl rounded-2xl overflow-hidden shadow-2xl border border-neutral-200/60 relative animate-in zoom-in-95 fade-in duration-1000 delay-500 bg-black">
                             {/* Dashboard Mockup Image */}
-                            <Image src="/images/napdo_royal_blue_hero_1771798110526.png" alt="Nabido 대시보드" width={1200} height={750} className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" priority />
+                            <Image src="/images/napdo_royal_blue_hero_1771798110526.png" alt="Noado 대시보드" width={1200} height={750} className="w-full h-auto opacity-90 hover:opacity-100 transition-opacity" priority />
                         </div>
                     </div>
                 </section>
@@ -251,7 +251,7 @@ export default function LandingPage() {
             {/* Footer */}
             <footer className="bg-neutral-900 text-neutral-400 py-12">
                 <div className="border-t border-neutral-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-500">
-                    <p>© 2026 Nabido. All rights reserved.</p>
+                    <p>© 2026 Noado. All rights reserved.</p>
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <Link href="/terms" className="hover:text-neutral-900 transition-colors">이용약관</Link>
                         <Link href="/privacy" className="hover:text-neutral-900 transition-colors">개인정보 처리방침</Link>

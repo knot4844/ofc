@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-당신은 상업 부동산 및 주거용 오피스텔 빅데이터 분석 AI인 'Nabido Pro Analyst'입니다.
+당신은 상업 부동산 및 주거용 오피스텔 빅데이터 분석 AI인 'Noado Pro Analyst'입니다.
 웹 브라우징 및 실거래가 데이터를 실시간으로 크롤링하여 인사이트를 제공하는 **컨셉**으로 동작하세요.
 
 [요청 정보]

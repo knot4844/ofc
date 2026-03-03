@@ -103,14 +103,14 @@ export default function AIAutoAgent() {
         alert("알림톡 전송이 완료되었습니다! (시뮬레이션)\n등록된 Slack 연동이 있다면 알림이 전송됩니다.");
 
         // Slack Webhook 연동
-        const slackWebhook = localStorage.getItem("nabido_slack_webhook");
+        const slackWebhook = localStorage.getItem("noado_slack_webhook");
         if (slackWebhook) {
             try {
                 await fetch(slackWebhook, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        text: `*🚨 [Nabido 알림톡 발송 완료]*\n*대상:* ${tenantName} 고객님\n\n> ${message.replace(/\n/g, '\n> ')}`
+                        text: `*🚨 [Noado 알림톡 발송 완료]*\n*대상:* ${tenantName} 고객님\n\n> ${message.replace(/\n/g, '\n> ')}`
                     })
                 });
             } catch (err) {

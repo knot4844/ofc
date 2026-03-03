@@ -14,7 +14,7 @@ export function Sidebar() {
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md group-hover:bg-blue-700 transition-colors">
                     <Building2 size={20} className="text-white" />
                 </div>
-                <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">Nabido</span>
+                <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">Noado</span>
             </Link>
             <div className="relative group mb-10 w-full">
                 <button className="w-full flex items-center justify-between p-2 hover:bg-neutral-50 rounded-xl transition-colors text-left border border-transparent hover:border-neutral-200">

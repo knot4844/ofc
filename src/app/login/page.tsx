@@ -88,7 +88,7 @@ export default function LoginPage() {
                         <span className="text-white font-black text-2xl tracking-tighter">DW</span>
                     </div>
                     <h2 className="text-center text-3xl font-extrabold text-neutral-900 tracking-tight group-hover:text-blue-600 transition-colors">
-                        Nabido
+                        Noado
                     </h2>
                 </Link>
                 <p className="mt-2 text-center text-sm text-neutral-500">임대업 1인 기업을 위한 완벽한 무인화 솔루션</p>
