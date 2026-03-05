@@ -1,21 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-export async function GET(request: Request) {
-    // 1. Check authorization
-    // In a real application, we would check the user's session token here
-    // Verify if the user.email is in the MASTER_ADMIN_EMAILS list.
-    // For simplicity in this demo, we'll assume the frontend will only call this if authorized,
-    // or we can pass the user email as a secure header/cookie.
-    // However, it's safer to just require an admin secret key via header for this demo.
+export async function GET(request: NextRequest) {
+    // 1. Check authorization via Supabase Auth
     const authHeader = request.headers.get('Authorization');
-    const adminSecret = process.env.MASTER_ADMIN_SECRET || 'daewoo-master-secret-2026';
-
-    if (authHeader !== `Bearer ${adminSecret}`) {
-        return NextResponse.json({ error: 'Unauthorized. Admin access only.' }, { status: 401 });
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return NextResponse.json({ error: 'Unauthorized. Missing token.' }, { status: 401 });
     }
 
-    // 2. Initialize Admin Supabase Client (bypasses RLS)
+    const token = authHeader.replace('Bearer ', '');
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -32,6 +26,19 @@ export async function GET(request: Request) {
             persistSession: false,
         },
     });
+
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized. Invalid token.' }, { status: 401 });
+    }
+
+    const userEmail = user.email || '';
+    const masterAdminEmails = (process.env.MASTER_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+
+    if (!masterAdminEmails.includes(userEmail)) {
+        return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
+    }
 
     try {
         // 3. Fetch aggregated stats

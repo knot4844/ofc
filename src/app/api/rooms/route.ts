@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabaseAdmin.from('rooms').insert({
         id: crypto.randomUUID(),
         business_id: body.businessId,
+        owner_id: user.id,
         name: body.name,
         status: body.status || 'VACANT',
         tenant_name: body.tenantName || null,

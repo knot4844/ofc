@@ -2,14 +2,21 @@
 
 import React, { useState } from "react";
 import { useBusiness } from "@/components/providers/BusinessProvider";
-import { CheckCircle2, AlertTriangle, Clock, CreditCard, TrendingDown } from "lucide-react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { CheckCircle2, AlertTriangle, Clock, CreditCard, TrendingDown, Plus, FileSpreadsheet } from "lucide-react";
+import { AddPaymentModal } from "@/components/payments/AddPaymentModal";
+import { ImportBankStatementModal } from "@/components/payments/ImportBankStatementModal";
 
 type FilterStatus = "ALL" | "PAID" | "UNPAID";
 
 export default function PaymentsPage() {
     const { selectedBusinessId, getPaymentsByBusiness, getRoomsByBusiness } = useBusiness();
+    const { user } = useAuth();
+    void user;
     const [filterStatus, setFilterStatus] = useState<FilterStatus>("ALL");
     const [filterMonth, setFilterMonth] = useState<string>("");
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const allPayments = getPaymentsByBusiness(selectedBusinessId);
     const rooms = getRoomsByBusiness(selectedBusinessId);
@@ -36,9 +43,32 @@ export default function PaymentsPage() {
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-            <header className="mb-2">
-                <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">수납 현황</h1>
-                <p className="text-neutral-500 mt-1">납부 이력 및 미납 현황을 확인합니다.</p>
+            {showAddModal && <AddPaymentModal onClose={() => setShowAddModal(false)} />}
+            {showImportModal && (
+                <ImportBankStatementModal
+                    onClose={() => setShowImportModal(false)}
+                    onImported={() => setShowImportModal(false)}
+                />
+            )}
+            <header className="flex items-end justify-between mb-2">
+                <div>
+                    <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">수납 현황</h1>
+                    <p className="text-neutral-500 mt-1">납부 이력 및 미납 현황을 확인합니다.</p>
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setShowImportModal(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-700 rounded-lg font-bold text-sm hover:bg-neutral-200 transition-all"
+                    >
+                        <FileSpreadsheet size={16} /> 통장내역 가져오기
+                    </button>
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 shadow-sm transition-all"
+                    >
+                        <Plus size={16} /> 수납 등록
+                    </button>
+                </div>
             </header>
 
             {/* KPI Cards */}
@@ -92,8 +122,8 @@ export default function PaymentsPage() {
                             key={s}
                             onClick={() => setFilterStatus(s)}
                             className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${filterStatus === s
-                                    ? "bg-blue-600 text-white shadow-sm"
-                                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                                ? "bg-blue-600 text-white shadow-sm"
+                                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
                                 }`}
                         >
                             {s === "ALL" ? "전체" : s === "PAID" ? "수납완료" : "미납"}

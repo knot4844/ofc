@@ -30,6 +30,12 @@ export default function RoomDetailPage() {
             <div className="p-8 text-center min-h-[50vh] flex flex-col items-center justify-center">
                 <AlertCircle className="text-neutral-400 mb-4" size={48} />
                 <h2 className="text-xl font-bold text-neutral-900 mb-2">호실을 찾을 수 없습니다</h2>
+                <p className="text-sm text-neutral-500 mb-4 whitespace-pre-wrap text-left">
+                    디버그 정보:<br />
+                    - 요청된 ID: {id} <br />
+                    - 현재 불러온 총 호실 수: {rooms.length} 개 <br />
+                    - Context Rooms 첫 1개 샘플 ID: {rooms[0]?.id || '없음'}
+                </p>
                 <button onClick={() => router.back()} className="text-blue-600 hover:underline">
                     이전 페이지로 돌아가기
                 </button>

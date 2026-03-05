@@ -9,6 +9,17 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: '토큰이 없습니다.' }, { status: 400 });
     }
 
+    // 데모 토큰 바이패스
+    if (token.startsWith('demo-token-')) {
+        return NextResponse.json({
+            roomId: token.replace('demo-token-', ''),
+            roomName: '데모 호실',
+            businessName: '데모 사업장',
+            tenantName: '데모 임차인',
+            tenantEmail: 'demo-tenant@example.com',
+        });
+    }
+
     const supabaseAdmin = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!,

@@ -14,7 +14,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function Home() {
   const { user } = useAuth();
-  const { selectedBusinessId, getRoomsByBusiness, currentBusiness } = useBusiness();
+  const { selectedBusinessId, getRoomsByBusiness, getPaymentsByBusiness, currentBusiness } = useBusiness();
 
   const rooms = getRoomsByBusiness(selectedBusinessId);
 
@@ -27,7 +27,15 @@ export default function Home() {
 
   const totalRent = rooms.filter(r => r.status !== 'VACANT').reduce((sum, r) => sum + (r.paymentInfo?.monthlyRent || 0), 0);
 
+  // 이번달 실수납 금액 (payments 기반)
   const today = new Date();
+  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const thisMonthPayments = getPaymentsByBusiness(selectedBusinessId).filter(
+    p => p.month === currentMonth && p.status === 'PAID'
+  );
+  const thisMonthCollected = thisMonthPayments.reduce((sum, p) => sum + p.amount, 0);
+  const collectionRate = totalRent > 0 ? Math.round((thisMonthCollected / totalRent) * 100) : 0;
+
   const sixtyDaysFromNow = new Date();
   sixtyDaysFromNow.setDate(today.getDate() + 60);
   const expiringRoomsCount = rooms.filter((r) => {
@@ -57,6 +65,12 @@ export default function Home() {
           value={`₩ ${(totalRent).toLocaleString()}`}
           subtitle="공실 제외 설정된 월세 합계"
           icon={<Wallet className="text-indigo-500" size={24} />}
+        />
+        <DashboardCard
+          title="이번 달 수납 금액"
+          value={`₩ ${thisMonthCollected.toLocaleString()}`}
+          subtitle={`수납률 ${collectionRate}% (${thisMonthPayments.length}건 완료)`}
+          icon={<Wallet className="text-emerald-500" size={24} />}
         />
         <DashboardCard
           title="이번 달 미수금"

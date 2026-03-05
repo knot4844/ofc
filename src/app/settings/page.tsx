@@ -8,7 +8,7 @@ import { useBusiness } from "@/components/providers/BusinessProvider";
 
 export default function SettingsPage() {
     const { user } = useAuth();
-    const { allBusinesses, setRooms } = useBusiness();
+    const { allBusinesses, setAllBusinesses, setRooms } = useBusiness();
     const isDemoUser = user?.id === 'demo-user-123';
 
     const [slackWebhook, setSlackWebhook] = useState("");
@@ -53,6 +53,7 @@ export default function SettingsPage() {
             if (!res.ok) throw new Error(data.error);
             const newBiz = { id: data.business.id, name: bizForm.name, ownerName: bizForm.ownerName, address: bizForm.address };
             setBusinesses(prev => [...prev, newBiz]);
+            setAllBusinesses(prev => [...prev, newBiz]);
             setShowAddBiz(false);
             setBizForm({ name: '', address: '', ownerName: '' });
             showNotif('success', `"${bizForm.name}" 사업장이 추가되었습니다.`);
@@ -74,6 +75,7 @@ export default function SettingsPage() {
             });
             if (!res.ok) throw new Error((await res.json()).error);
             setBusinesses(prev => prev.filter(b => b.id !== id));
+            setAllBusinesses(prev => prev.filter(b => b.id !== id));
             setRooms(prev => prev.filter(r => r.businessId !== id));
             showNotif('success', `"${name}" 사업장이 삭제되었습니다.`);
         } catch (e: any) {

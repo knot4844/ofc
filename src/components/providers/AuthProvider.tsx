@@ -30,9 +30,11 @@ export const useAuth = () => {
 export const toggleDemoLogin = (status: boolean) => {
     if (typeof window === 'undefined') return;
     if (status) {
+        document.cookie = "noado_demo_mode=true; path=/";
         localStorage.setItem('local_demo_login', 'true');
         window.location.href = '/dashboard';
     } else {
+        document.cookie = "noado_demo_mode=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         localStorage.removeItem('local_demo_login');
         window.location.href = '/login';
     }
@@ -89,8 +91,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Not logged in and trying to access landlord private route -> redirect to login
                 router.push('/login');
             } else if (user && (pathname === '/login' || pathname === '/signup')) {
-                // Logged in but on login/signup page -> redirect to dashboard
-                router.push('/dashboard');
+                // Logged in but on login/signup page -> redirect based on role
+                const role = user.user_metadata?.role || "LANDLORD";
+                router.push(role === "TENANT" ? "/tenant-portal" : "/dashboard");
             }
         }
     }, [user, isLoading, pathname, router]);

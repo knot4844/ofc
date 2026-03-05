@@ -31,7 +31,15 @@ export async function POST(request: NextRequest) {
         { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    // 해당 호실이 관리자 소유인지 확인
+    // 데모 호실 (메모리 데이터) 처리 우회
+    if (roomId.startsWith('r_')) {
+        const token = `demo-token-${roomId}`;
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        const inviteUrl = `${request.headers.get('origin')}/invite/${token}`;
+        return NextResponse.json({ success: true, inviteUrl, expiresAt });
+    }
+
+    // 해당 호실이 관리자 소유인지 확인 (실제 DB 호실)
     const { data: room, error: roomError } = await supabaseAdmin
         .from('rooms')
         .select('id, business_id, businesses(owner_id)')

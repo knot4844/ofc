@@ -10,8 +10,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     // Only apply dashboard layout wrappers when NOT on standard public routes
     const isPublicRoute = ['/', '/login', '/master-admin', '/terms', '/privacy'].includes(pathname) || pathname?.startsWith('/pricing');
+    const isTenantRoute = pathname?.startsWith('/tenant-portal');
 
-    if (isPublicRoute) {
+    if (isPublicRoute || isTenantRoute) {
         return <>{children}</>;
     }
 

@@ -1,10 +1,12 @@
 /**
  * Solapi SDK를 사용한 카카오 알림톡 발송 유틸리티
  * 채널: @대우오피스
- * 템플릿 코드: DAILY_BRIEFING_001 / UNPAID_REMINDER_001 / PAYMENT_COMPLETE_001
+ * 템플릿 코드: 
+ *  - 일일 브리핑: KA01TP260302200255741jxhgbrVAp1l
+ *  - 미납 독촉: KA01TP260302200441583wMOcyLIy71M
+ *  - 수납 완료: KA01TP2603022005171505KORmx0Qpva
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const SolapiMessageService = require('solapi').default ?? require('solapi');
+import { SolapiMessageService } from 'solapi';
 
 const apiKey = process.env.SOLAPI_API_KEY!;
 const apiSecret = process.env.SOLAPI_API_SECRET!;
@@ -47,9 +49,11 @@ export async function sendKakaoAlimtalk(payload: AlimtalkPayload): Promise<boole
 
         console.log(`✅ 알림톡 발송 성공: ${to} / ${templateCode}`);
         return true;
-    } catch (error: unknown) {
-        const err = error as { message?: string };
-        console.error(`❌ 알림톡 발송 실패: ${err.message}`);
+    } catch (error: any) {
+        console.error(`❌ 알림톡 발송 실패: ${error.message}`);
+        if (error.failedMessageList) {
+            console.error(`실패 사유 상세:`, JSON.stringify(error.failedMessageList, null, 2));
+        }
         return false;
     }
 }

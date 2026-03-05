@@ -122,3 +122,46 @@ export const getRoomsByBusiness = (businessId: string | "ALL"): Room[] => {
     if (businessId === "ALL") return allRooms;
     return allRooms.filter(r => r.businessId === businessId);
 };
+
+export const payments: Payment[] = [];
+allRooms.forEach(room => {
+    if (room.status === "VACANT") return;
+
+    const monthlyRent = room.paymentInfo?.monthlyRent || 0;
+
+    // 최근 3개월치 결제 내역 생성
+    for (let i = 1; i <= 3; i++) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        // month: 'YYYY-MM' format (used in payment sorting)
+        const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+        let paymentStatus: PaymentStatus = "PAID";
+        // 미납 호실인 경우, 미납 개월 수만큼 UNPAID 로 설정
+        if (room.status === "UNPAID" && i <= (room.unpaidMonths || 0)) {
+            paymentStatus = "UNPAID";
+        }
+
+        let paidAt = "";
+        if (paymentStatus === "PAID") {
+            const paidDate = new Date(date);
+            // 약정일에서 숫자만 추출
+            const dueDay = parseInt(room.paymentInfo?.dueDate.replace(/[^0-9]/g, '') || "25");
+            paidDate.setDate(dueDay);
+            // 시간은 오전 10시경
+            paidDate.setHours(10 + Math.floor(Math.random() * 5), Math.floor(Math.random() * 60));
+            paidAt = paidDate.toISOString();
+        }
+
+        payments.push({
+            id: `p_${room.id}_${monthStr}`,
+            businessId: room.businessId,
+            roomId: room.id,
+            tenantName: room.tenant?.name || "알 수 없음",
+            amount: monthlyRent,
+            paidAt,
+            month: monthStr,
+            status: paymentStatus
+        });
+    }
+});

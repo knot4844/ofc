@@ -9,33 +9,72 @@ export default function AuthCallbackPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Supabase가 URL hash에서 세션을 자동으로 처리함
-        const handleCallback = async () => {
+        let mounted = true;
+
+        const handleAuth = async () => {
+            // 1. PKCE Flow (Email confirmation link uses ?code=...)
+            const url = new URL(window.location.href);
+            const code = url.searchParams.get('code');
+
+            if (code) {
+                const { error } = await supabase.auth.exchangeCodeForSession(code);
+                if (error) {
+                    console.error("Auth callback exchange error:", error);
+                    if (mounted) router.push("/login?error=" + encodeURIComponent("로그인 처리 중 오류가 발생했습니다."));
+                    return;
+                }
+            }
+
+            // 2. Session Check
             const { data: { session }, error } = await supabase.auth.getSession();
 
             if (error) {
                 console.error("Auth callback error:", error);
-                router.push("/login?error=" + encodeURIComponent(error.message));
+                if (mounted) router.push("/login?error=" + encodeURIComponent(error.message));
                 return;
             }
 
             if (session) {
-                // 로그인 성공 → 대시보드로
-                router.push("/dashboard");
-            } else {
-                // 세션이 없으면 URL hash에서 토큰 처리 대기 후 재시도
-                setTimeout(async () => {
-                    const { data: { session: retrySession } } = await supabase.auth.getSession();
-                    if (retrySession) {
-                        router.push("/dashboard");
+                const role = session.user?.user_metadata?.role;
+                if (mounted) {
+                    if (role === 'TENANT') {
+                        router.push("/tenant-portal");
                     } else {
-                        router.push("/login");
+                        router.push("/dashboard");
                     }
-                }, 1000);
+                }
             }
         };
 
-        handleCallback();
+        // 해시 프래그먼트나 onAuthStateChange 등 지연 로딩을 대비하기 위한 리스너
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                const role = session.user?.user_metadata?.role;
+                if (mounted) {
+                    if (role === 'TENANT') {
+                        router.push("/tenant-portal");
+                    } else {
+                        router.push("/dashboard");
+                    }
+                }
+            }
+        });
+
+        handleAuth();
+
+        const timeoutId = setTimeout(() => {
+            if (mounted) {
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    if (!session) router.push("/login?error=" + encodeURIComponent("로그인 세션 만료. 다시 로그인해주세요."));
+                });
+            }
+        }, 3000);
+
+        return () => {
+            mounted = false;
+            clearTimeout(timeoutId);
+            subscription.unsubscribe();
+        };
     }, [router]);
 
     return (

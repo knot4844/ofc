@@ -52,11 +52,14 @@ interface BusinessContextType {
     setSelectedBusinessId: (id: string) => void;
     currentBusiness: Business | undefined;
     allBusinesses: Business[];
+    setAllBusinesses: React.Dispatch<React.SetStateAction<Business[]>>;
     rooms: Room[];
     setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
     payments: Payment[];
     getRoomsByBusiness: (businessId: string) => Room[];
     getPaymentsByBusiness: (businessId: string) => Payment[];
+    addPayment: (payment: Payment) => void;
+    refetchPayments: () => Promise<void>;
     isLoading: boolean;
 }
 
@@ -184,17 +187,52 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
         return payments.filter(p => p.businessId === businessId);
     };
 
+    const addPayment = (payment: Payment) => {
+        setPayments(prev => [payment, ...prev]);
+    };
+
+    const refetchPayments = async () => {
+        if (!useSupabase) return;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+            const res = await fetch('/api/payments', {
+                headers: { Authorization: `Bearer ${session.access_token}` }
+            });
+            const json = await res.json();
+            if (json.payments) {
+                const mapped: Payment[] = json.payments.map((d: { id: string; business_id: string; room_id: string; tenant_name: string; amount: number; paid_at: string; month: string; status: 'PAID' | 'UNPAID' | 'PARTIAL'; note?: string }) => ({
+                    id: d.id,
+                    businessId: d.business_id,
+                    roomId: d.room_id,
+                    tenantName: d.tenant_name,
+                    amount: d.amount,
+                    paidAt: d.paid_at,
+                    month: d.month,
+                    status: d.status,
+                    note: d.note,
+                }));
+                setPayments(mapped);
+            }
+        } catch (err) {
+            console.error('refetchPayments error:', err);
+        }
+    };
+
     return (
         <BusinessContext.Provider value={{
             selectedBusinessId,
             setSelectedBusinessId,
             currentBusiness,
             allBusinesses,
+            setAllBusinesses,
             rooms,
             setRooms,
             payments,
             getRoomsByBusiness,
             getPaymentsByBusiness,
+            addPayment,
+            refetchPayments,
             isLoading
         }}>
             {children}

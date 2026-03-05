@@ -2,19 +2,15 @@
 
 import React, { useState } from "react";
 import { useBusiness } from "@/components/providers/BusinessProvider";
-import { Room } from "@/lib/data";
 import { FileText, Send, CheckCircle2 } from "lucide-react";
 import * as XLSX from "xlsx";
 
 export default function InvoicesPage() {
     const { selectedBusinessId, currentBusiness, getRoomsByBusiness } = useBusiness();
 
-    // In a real app, we would only fetch properties that need an invoice generated.
-    // For this prototype, let's filter the ones that are PAID representing "needs tax invoice".
     const rooms = getRoomsByBusiness(selectedBusinessId).filter(r => r.status !== "VACANT");
 
     const [selectedRooms, setSelectedRooms] = useState<Set<string>>(new Set(rooms.map(r => r.id)));
-    const [isIssuing, setIsIssuing] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
 
     const toggleSelectAll = () => {
@@ -33,63 +29,32 @@ export default function InvoicesPage() {
     };
 
     const handleIssueInvoices = () => {
-        setIsIssuing(true);
-
-        // Prepare Data for Hometax Bulk Upload Style
         const hometaxData = rooms
             .filter(r => selectedRooms.has(r.id))
-            .map((r, index) => {
+            .map((r) => {
                 const rent = r.paymentInfo?.monthlyRent || 0;
                 const supplyValue = Math.floor(rent / 1.1);
                 const vat = rent - supplyValue;
                 const today = new Date();
                 const writeDate = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}15`;
-
                 return {
-                    "전자세금계산서 종류": "01", // 일반
+                    "전자세금계산서 종류": "01",
                     "작성일자": writeDate,
                     "공급자 사업자등록번호": currentBusiness?.registrationNumber || "",
-                    "공급자 종사업장번호": "0000",
                     "공급자 상호": currentBusiness?.name || "",
                     "공급자 성명": currentBusiness?.ownerName || "",
-                    "공급자 사업장주소": currentBusiness?.address || "",
-                    "공급자 업태": "부동산업",
-                    "공급자 종목": "임대",
-                    "공급자 이메일": "admin@daewoo.com",
-                    "받는자 사업자등록번호": r.tenant?.businessRegistrationNumber || "",
-                    "받는자 종사업장번호": "",
                     "받는자 상호": r.tenant?.companyName || r.tenant?.name || "",
                     "받는자 성명": r.tenant?.name || "",
-                    "받는자 사업장주소": "",
-                    "받는자 업태": "",
-                    "받는자 종목": "",
-                    "받는자 이메일1": "",
                     "공급가액": supplyValue,
                     "세액": vat,
                     "비고": `${r.name} 임대료`,
-                    "일자1": writeDate,
-                    "품목1": "임대료",
-                    "규격1": r.name,
-                    "수량1": 1,
-                    "단가1": supplyValue,
-                    "공급가액1": supplyValue,
-                    "세액1": vat,
-                    "비고1": ""
                 };
             });
-
-        // Simulate short delay then generate Excel
-        setTimeout(() => {
-            const worksheet = XLSX.utils.json_to_sheet(hometaxData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "일괄발행내역");
-
-            const fileName = `홈택스_일괄발행_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            XLSX.writeFile(workbook, fileName);
-
-            setIsIssuing(false);
-            setIsComplete(true);
-        }, 1500);
+        const worksheet = XLSX.utils.json_to_sheet(hometaxData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "일괄발행내역");
+        XLSX.writeFile(workbook, `홈택스_일괄발행_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        setIsComplete(true);
     };
 
     if (isComplete) {
@@ -98,9 +63,9 @@ export default function InvoicesPage() {
                 <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 size={40} />
                 </div>
-                <h1 className="text-3xl font-bold text-neutral-900 mb-2">세금계산서 발행 완료!</h1>
+                <h1 className="text-3xl font-bold text-neutral-900 mb-2">홈택스 엑셀 다운로드 완료!</h1>
                 <p className="text-neutral-500 mb-8 max-w-md">
-                    성공적으로 {selectedRooms.size}건의 전자세금계산서가 국세청 홈택스로 전송되었습니다. 임차인에게 알림톡이 자동으로 발송됩니다.
+                    {selectedRooms.size}건의 세금계산서 데이터가 엑셀 파일로 다운로드되었습니다. 홈택스에서 일괄 업로드하여 발행하세요.
                 </p>
                 <button
                     onClick={() => {
@@ -217,25 +182,19 @@ export default function InvoicesPage() {
 
                         <button
                             onClick={handleIssueInvoices}
-                            disabled={selectedRooms.size === 0 || isIssuing}
-                            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all shadow-lg text-lg ${selectedRooms.size > 0 && !isIssuing
+                            disabled={selectedRooms.size === 0}
+                            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all shadow-lg text-lg ${selectedRooms.size > 0
                                 ? "bg-white text-indigo-900 hover:bg-neutral-50 hover:shadow-xl hover:-translate-y-0.5"
                                 : "bg-indigo-800 text-indigo-400 cursor-not-allowed"
                                 }`}
                         >
-                            {isIssuing ? (
-                                <span className="animate-pulse">국세청 전송 중...</span>
-                            ) : (
-                                <>
-                                    <Send size={20} />
-                                    {selectedRooms.size}건 일괄 발행하기
-                                </>
-                            )}
+                            <Send size={20} />
+                            {selectedRooms.size}건 홈택스 엑셀 다운로드
                         </button>
 
                         <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-indigo-300">
                             <FileText size={14} />
-                            <span>국세청 홈택스 표준 포맷 자동 연동</span>
+                            <span>홈택스 일괄등록 표준 포맷 (엑셀)</span>
                         </div>
                     </div>
                 </div>

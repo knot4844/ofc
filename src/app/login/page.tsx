@@ -15,6 +15,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [role, setRole] = useState<'LANDLORD' | 'TENANT'>('LANDLORD');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -36,11 +37,27 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true); clearMsg();
         try {
-            const { error } = await supabase.auth.signUp({
+            const { data, error } = await supabase.auth.signUp({
                 email, password,
-                options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+                options: {
+                    data: { role },
+                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                }
             });
             if (error) throw error;
+
+            // 이미 가입된 계정인 경우 (Fake Success 방어)
+            if (data?.user?.identities && data.user.identities.length === 0) {
+                setMessage({ type: 'error', text: '이미 가입된 이메일 주소입니다.' });
+                return;
+            }
+
+            // 이메일 인증이 꺼져서 Session이 바로 발급된 경우 곧바로 리디렉션
+            if (data?.session) {
+                router.push('/auth/callback');
+                return;
+            }
+
             setMessage({ type: 'success', text: '가입 확인 이메일이 발송되었습니다. 메일함을 확인해주세요!' });
         } catch (err: any) {
             setMessage({ type: 'error', text: err.message });
@@ -53,7 +70,10 @@ export default function LoginPage() {
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
-                options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+                options: {
+                    data: { role },
+                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                },
             });
             if (error) throw error;
             setMessage({ type: 'success', text: '로그인 링크가 발송되었습니다. 메일함을 확인해주세요!' });
@@ -135,6 +155,16 @@ export default function LoginPage() {
 
                     {!isMagic ? (
                         <form className="space-y-4" onSubmit={isSignup ? handleSignup : handlePasswordLogin}>
+                            {isSignup && (
+                                <div className="flex bg-neutral-100 p-1 rounded-xl mb-4">
+                                    <button type="button" onClick={() => setRole('LANDLORD')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${role === 'LANDLORD' ? 'bg-white shadow-sm text-blue-700' : 'text-neutral-500'}`}>
+                                        임대인(관리자)
+                                    </button>
+                                    <button type="button" onClick={() => setRole('TENANT')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${role === 'TENANT' ? 'bg-white shadow-sm text-blue-700' : 'text-neutral-500'}`}>
+                                        임차인(세입자)
+                                    </button>
+                                </div>
+                            )}
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400" />
                                 <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="block w-full pl-10 border border-neutral-300 rounded-xl py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="이메일 주소" />

@@ -24,6 +24,7 @@ export default function TenantsPage() {
     const [showAddRoom, setShowAddRoom] = useState(false);
     const [addRoomForm, setAddRoomForm] = useState({ name: '', tenantName: '', tenantContact: '', monthlyRent: 0, deposit: 0, leaseStart: '', leaseEnd: '', businessId: '' });
     const [isAddingRoom, setIsAddingRoom] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const showNotification = (type: 'success' | 'error', text: string) => {
@@ -58,12 +59,14 @@ export default function TenantsPage() {
             setShowAddRoom(false);
             setAddRoomForm({ name: '', tenantName: '', tenantContact: '', monthlyRent: 0, deposit: 0, leaseStart: '', leaseEnd: '', businessId: '' });
             showNotification('success', `${addRoomForm.name} 호실이 추가되었습니다.`);
-        } catch (e: any) {
-            showNotification('error', e.message);
+        } catch (e: unknown) {
+            showNotification('error', e instanceof Error ? e.message : '오류 발생');
         } finally {
             setIsAddingRoom(false);
         }
     };
+
+
 
     const handleGenerateInviteLink = async (roomId: string) => {
         setGeneratingLink(roomId);
@@ -110,10 +113,36 @@ export default function TenantsPage() {
         setSelectedRooms(newSet);
     };
 
-    const handleBulkNotification = () => {
+    const handleBulkNotification = async () => {
         if (selectedRooms.size === 0) return;
-        showNotification('success', `${selectedRooms.size}명의 임차인에게 카카오톡/문자 알림을 발송했습니다.`);
-        setSelectedRooms(new Set());
+        if (isDemoUser) {
+            showNotification('success', `${selectedRooms.size}명의 임차인에게 카카오톡 알림을 발송했습니다. (데모)`);
+            setSelectedRooms(new Set());
+            return;
+        }
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('로그인이 필요합니다.');
+
+            const res = await fetch('/api/admin/send-alimtalk', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                    roomIds: Array.from(selectedRooms),
+                    type: 'UNPAID_REMINDER',
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+            showNotification('success', data.message || `${selectedRooms.size}명 발송 완료`);
+        } catch (e: unknown) {
+            showNotification('error', e instanceof Error ? e.message : '발송 실패');
+        } finally {
+            setSelectedRooms(new Set());
+        }
     };
 
     // Excel Download

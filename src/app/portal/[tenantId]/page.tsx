@@ -32,6 +32,12 @@ export default function TenantPortalPage() {
 
     useEffect(() => {
         const check = async () => {
+            // 데모 호실 바이패스
+            if (id?.startsWith('r_')) {
+                setAuthState("allowed");
+                return;
+            }
+
             const { data } = await supabase.auth.getSession();
             const sessionUser = data.session?.user;
 

@@ -1,89 +1,81 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Building2, Users, Home, TrendingUp, ShieldCheck, Lock, Loader2, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building2, Users, Home, TrendingUp, ShieldCheck, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function MasterAdminPage() {
-    const [password, setPassword] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const router = useRouter();
 
     const [stats, setStats] = useState<any>(null);
     const [recentBusinesses, setRecentBusinesses] = useState<any[]>([]);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError('');
+    useEffect(() => {
+        const checkAuthAndFetchStats = async () => {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        try {
-            const res = await fetch('/api/admin/stats', {
-                headers: {
-                    'Authorization': `Bearer ${password}`
+                if (sessionError || !session) {
+                    router.push('/login');
+                    return;
                 }
-            });
-            const data = await res.json();
 
-            if (!res.ok) {
-                throw new Error(data.error || '접근이 거부되었습니다.');
+                const res = await fetch('/api/admin/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    }
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || '마스터 관리자 권한이 없습니다.');
+                }
+
+                setStats(data.stats);
+                setRecentBusinesses(data.recentBusinesses);
+                setIsAuthenticated(true);
+                setIsLoading(false);
+            } catch (err: any) {
+                setError(err.message);
+                setIsLoading(false);
             }
+        };
 
-            setStats(data.stats);
-            setRecentBusinesses(data.recentBusinesses);
-            setIsAuthenticated(true);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        checkAuthAndFetchStats();
+    }, [router]);
 
-    if (!isAuthenticated) {
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center p-4">
+                <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
+                <p className="text-white">마스터 권한을 확인하고 있습니다...</p>
+            </div>
+        );
+    }
+
+    if (error) {
         return (
             <div className="min-h-screen bg-neutral-900 flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-                    <div className="p-8 text-center bg-neutral-50 border-b border-neutral-100">
-                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShieldCheck size={32} />
-                        </div>
-                        <h1 className="text-2xl font-bold text-neutral-900">마스터 관리자</h1>
-                        <p className="text-neutral-500 mt-2 text-sm">시스템 관리를 위한 마스터 비밀번호를 입력하세요.</p>
+                <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8 text-center">
+                    <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <ShieldCheck size={32} />
                     </div>
-                    <form onSubmit={handleLogin} className="p-8 space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Master Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                    placeholder="비밀번호 입력"
-                                    required
-                                />
-                            </div>
-                            {error && <p className="mt-2 text-sm text-rose-600 font-medium">{error}</p>}
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-                        >
-                            {isLoading ? <Loader2 className="animate-spin" size={20} /> : '인증 및 대시보드 진입'}
-                        </button>
-                    </form>
-                    <div className="bg-neutral-50 p-4 text-center border-t border-neutral-100">
-                        <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-900 flex items-center justify-center gap-1">
-                            <ArrowRight className="rotate-180" size={16} /> 서비스 홈으로 돌아가기
-                        </Link>
-                    </div>
+                    <h1 className="text-xl font-bold text-neutral-900 mb-2">접근 권한 없음</h1>
+                    <p className="text-neutral-500 mb-6">{error}</p>
+                    <Link href="/dashboard" className="inline-flex items-center justify-center w-full py-3 bg-neutral-900 text-white font-bold rounded-xl hover:bg-neutral-800 transition-colors">
+                        대시보드로 돌아가기
+                    </Link>
                 </div>
             </div>
         );
     }
+
+    if (!isAuthenticated) return null;
 
     return (
         <div className="min-h-screen bg-neutral-50">
@@ -94,12 +86,12 @@ export default function MasterAdminPage() {
                         <ShieldCheck className="text-blue-400" size={24} />
                         <h1 className="font-bold text-lg tracking-tight">noado 백오피스 (SaaS Admin)</h1>
                     </div>
-                    <button
-                        onClick={() => setIsAuthenticated(false)}
-                        className="text-sm text-neutral-400 hover:text-white transition-colors"
+                    <Link
+                        href="/dashboard"
+                        className="text-sm text-neutral-400 hover:text-white transition-colors flex items-center gap-2"
                     >
-                        로그아웃
-                    </button>
+                        일반 대시보드 가기 <ArrowRight size={16} />
+                    </Link>
                 </div>
             </header>
 
