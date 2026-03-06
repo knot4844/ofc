@@ -260,7 +260,7 @@ export default function LandingPage() {
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <Link href="/terms" className="hover:text-neutral-900 transition-colors">이용약관</Link>
                         <Link href="/privacy" className="hover:text-neutral-900 transition-colors">개인정보 처리방침</Link>
-                        <a href="mailto:support@noado.co.kr" className="hover:text-neutral-900 transition-colors">고객지원</a>
+                        <a href="mailto:support@noado.kr" className="hover:text-neutral-900 transition-colors">고객지원</a>
                     </div>
                 </div>
             </footer>

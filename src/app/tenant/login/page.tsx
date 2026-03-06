@@ -33,8 +33,6 @@ export default function TenantLoginPage() {
             provider: "kakao",
             options: {
                 redirectTo: `${window.location.origin}/tenant/callback`,
-                scopes: "profile_nickname",
-                queryParams: { scope: "profile_nickname" },
             },
         });
     };

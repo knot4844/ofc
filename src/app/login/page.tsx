@@ -41,7 +41,7 @@ export default function LoginPage() {
                 email, password,
                 options: {
                     data: { role },
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                    emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`
                 }
             });
             if (error) throw error;
@@ -72,7 +72,7 @@ export default function LoginPage() {
                 email,
                 options: {
                     data: { role },
-                    emailRedirectTo: `${window.location.origin}/auth/callback`
+                    emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`
                 },
             });
             if (error) throw error;
@@ -87,9 +87,7 @@ export default function LoginPage() {
             await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
-                    // KOE205 방지: 비즈니스 앱 심사 전까지는 이메일 스코프 제외
-                    scopes: provider === 'kakao' ? 'profile_nickname profile_image' : undefined,
+                    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`,
                 },
             });
         } catch {

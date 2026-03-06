@@ -14,6 +14,16 @@ export default function PricingPage() {
             {/* Background Decorations */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-100/50 to-transparent blur-3xl -z-10 rounded-full"></div>
 
+            {/* Home Logo Button */}
+            <div className="absolute top-6 left-6 z-10">
+                <Link href="/" className="flex items-center gap-2 group">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md group-hover:bg-blue-700 transition-colors">
+                        <Building2 size={20} className="text-white" />
+                    </div>
+                    <span className="font-extrabold text-xl tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">noado</span>
+                </Link>
+            </div>
+
 
             <div className="max-w-7xl mx-auto px-4 md:px-8 pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">

@@ -19,9 +19,13 @@ export default function AuthCallbackPage() {
             if (code) {
                 const { error } = await supabase.auth.exchangeCodeForSession(code);
                 if (error) {
-                    console.error("Auth callback exchange error:", error);
-                    if (mounted) router.push("/login?error=" + encodeURIComponent("로그인 처리 중 오류가 발생했습니다."));
-                    return;
+                    // React Strict Mode 등에서 두 번 실행되어 code가 만료되었더라도, 이미 세션이 생겼다면 에러 무시
+                    const { data: { session: existingSession } } = await supabase.auth.getSession();
+                    if (!existingSession) {
+                        console.error("Auth callback exchange error:", error);
+                        if (mounted) router.push("/login?error=" + encodeURIComponent("로그인 처리 중 오류가 발생했습니다. (Code Exchanged)"));
+                        return;
+                    }
                 }
             }
 

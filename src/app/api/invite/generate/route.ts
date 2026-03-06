@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
     if (roomId.startsWith('r_')) {
         const token = `demo-token-${roomId}`;
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-        const inviteUrl = `${request.headers.get('origin')}/invite/${token}`;
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get('origin');
+        const inviteUrl = `${baseUrl}/invite/${token}`;
         return NextResponse.json({ success: true, inviteUrl, expiresAt });
     }
 
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    const inviteUrl = `${request.headers.get('origin')}/invite/${token}`;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get('origin');
+    const inviteUrl = `${baseUrl}/invite/${token}`;
     return NextResponse.json({ success: true, inviteUrl, expiresAt });
 }
