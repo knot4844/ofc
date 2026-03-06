@@ -12,55 +12,51 @@ export default function AuthCallbackPage() {
         let mounted = true;
 
         const handleAuth = async () => {
-            // supabase.auth.getSession() will automatically handle the PKCE code exchange
-            // if ?code=... is present in the URL, thanks to the SSR client setup.
+            const url = new URL(window.location.href);
+            const code = url.searchParams.get('code');
+
+            if (code) {
+                const { error } = await supabase.auth.exchangeCodeForSession(code);
+                // Even on error (e.g., Code Exchanged due to StrictMode), we proceed
+                // and check if a session exists below.
+            }
+
             const { data: { session }, error } = await supabase.auth.getSession();
 
-            if (error) {
-                console.error("Auth callback error:", error);
-                if (mounted) router.push("/login?error=" + encodeURIComponent(error.message));
+            if (error && mounted) {
+                console.error("Auth callback session error:", error);
+                router.push("/login?error=" + encodeURIComponent(error.message));
                 return;
             }
 
-            if (session) {
+            if (session && mounted) {
                 const role = session.user?.user_metadata?.role;
-                if (mounted) {
-                    if (role === 'TENANT') {
-                        router.push("/tenant-portal");
-                    } else {
-                        router.push("/dashboard");
-                    }
+                if (role === 'TENANT') {
+                    router.push("/tenant-portal");
+                } else {
+                    router.push("/dashboard");
                 }
+            } else if (mounted) {
+                // Not authenticated for some reason (maybe code invalid and no session)
+                router.push("/login?error=" + encodeURIComponent("인증 처리 중 문제가 발생했습니다. (No Session)"));
             }
         };
 
-        // 해시 프래그먼트나 onAuthStateChange 등 지연 로딩을 대비하기 위한 리스너
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
+            if (event === 'SIGNED_IN' && session && mounted) {
                 const role = session.user?.user_metadata?.role;
-                if (mounted) {
-                    if (role === 'TENANT') {
-                        router.push("/tenant-portal");
-                    } else {
-                        router.push("/dashboard");
-                    }
+                if (role === 'TENANT') {
+                    router.push("/tenant-portal");
+                } else {
+                    router.push("/dashboard");
                 }
             }
         });
 
         handleAuth();
 
-        const timeoutId = setTimeout(() => {
-            if (mounted) {
-                supabase.auth.getSession().then(({ data: { session } }) => {
-                    if (!session) router.push("/login?error=" + encodeURIComponent("로그인 세션 만료. 다시 로그인해주세요."));
-                });
-            }
-        }, 3000);
-
         return () => {
             mounted = false;
-            clearTimeout(timeoutId);
             subscription.unsubscribe();
         };
     }, [router]);
