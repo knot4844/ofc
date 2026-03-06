@@ -12,24 +12,8 @@ export default function AuthCallbackPage() {
         let mounted = true;
 
         const handleAuth = async () => {
-            // 1. PKCE Flow (Email confirmation link uses ?code=...)
-            const url = new URL(window.location.href);
-            const code = url.searchParams.get('code');
-
-            if (code) {
-                const { error } = await supabase.auth.exchangeCodeForSession(code);
-                if (error) {
-                    // React Strict Mode 등에서 두 번 실행되어 code가 만료되었더라도, 이미 세션이 생겼다면 에러 무시
-                    const { data: { session: existingSession } } = await supabase.auth.getSession();
-                    if (!existingSession) {
-                        console.error("Auth callback exchange error:", error);
-                        if (mounted) router.push("/login?error=" + encodeURIComponent("로그인 처리 중 오류가 발생했습니다. (Code Exchanged)"));
-                        return;
-                    }
-                }
-            }
-
-            // 2. Session Check
+            // supabase.auth.getSession() will automatically handle the PKCE code exchange
+            // if ?code=... is present in the URL, thanks to the SSR client setup.
             const { data: { session }, error } = await supabase.auth.getSession();
 
             if (error) {
